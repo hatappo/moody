@@ -1,0 +1,59 @@
+{:source-paths ["src" "test"]
+
+ :nrepl {:port 3333}
+
+ :dev-http {8021 "out/test"}
+
+ :dependencies [[bidi "2.1.5"]
+                [binaryage/devtools "1.0.7"]
+                [cljs-ajax/cljs-ajax "0.8.4"]
+                [camel-snake-kebab/camel-snake-kebab "0.4.3"]
+                [com.lambdaisland/deja-fu "1.5.62"]
+                [com.taoensso/timbre "6.2.2"]
+                ;; [day8.re-frame/http-fx "0.2.4"]
+                [day8.re-frame/re-frame-10x "1.8.1"]
+                [day8.re-frame/tracing "0.6.2"]
+                [day8.re-frame/tracing-stubs "0.6.2"]
+                [kibu/pushy "0.3.8"]
+                [tupelo "23.07.04"]
+                [reagent "1.2.0"]
+                [re-frame "1.4.0"]]
+
+ :builds {;; テスト on Node.js
+          :test-local-server
+          {:target :node-test
+           :output-to "out/node-tests.js"
+           :autorun false}
+
+          ;; テスト on ブラウザ
+          :test-local-browser
+          {:target :browser-test
+           :test-dir "out/test"}
+
+          ;; テスト on CI
+          :test-ci
+          {:target :karma
+           :output-to "target/ci.js"}
+
+          ;; ローカル起動 on ブラウザ
+          :web-local
+          {:target :browser
+           :output-dir "public/js"
+           :asset-path "/js"
+           :modules {:main {:init-fn moody.core/init}}
+           :dev {:build-options {:ns-aliases {moody.config.env moody.config.env-local
+                                              day8.re-frame.tracing-stubs day8.re-frame.tracing}}
+                 :compiler-options {:closure-defines {re-frame.trace/trace-enabled? true
+                                                      day8.re-frame.tracing/trace-enabled? true}}}
+           :devtools {:http-root "public"
+                      :http-port 3330
+                      ;; NOTE: after released 10x over 1.8.3 versions to remove warning related to react 18
+                      :preloads [day8.re-frame-10x.preload #_day8.re-frame-10x.preload.react-18]}
+           :release {:build-options {:ns-aliases {moody.config.env moody.config.env-local}}}}
+
+          :web-github-pages
+          {:target :browser
+           :output-dir "public/js"
+           :asset-path "/js"
+           :modules {:main {:init-fn moody.core/init}}
+           :release {:build-options {:ns-aliases {moody.config.env moody.config.env-github-pages}}}}}}

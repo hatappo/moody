@@ -1,0 +1,42 @@
+{
+  "name": "dev-tokoro",
+  "version": "0.0.1",
+  "description": "Utilities for web development on both browser and command line",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "node": "shadow-cljs server",
+    "test": "shadow-cljs compile test-local-server && node out/node-tests.js; sh bin/print-by-status.sh",
+    "dev:test": "shadow-cljs watch test-local-server --config-merge '{:autorun true}'",
+    "dev:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css --watch",
+    "dev:cljs": "shadow-cljs watch web-local",
+    "dev": "conc --timings -t 'HHmmss' -p '{time}[{name}]' -c 'auto' -n 'css,cljs' 'npm run dev:css' 'npm run dev:cljs'",
+    "develop": "conc --timings -t 'HHmmss' -p '{time}[{name}]' -c 'auto' -n 'css,cljs,test' 'npm run dev:css' 'npm run dev:cljs' 'npm run dev:test'",
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css --minify",
+    "build:cljs": "shadow-cljs release",
+    "build": "npm run clean && npm run build:css && npm run build:cljs web-github-pages",
+    "clean:css": "rm -rf public/css/*",
+    "clean:cljs": "rm -rf target && rm -rf public/js/*",
+    "clean": "npm run clean:cljs && npm run clean:css"
+  },
+  "dependencies": {
+    "create-react-class": "15.7.0",
+    "encoding-japanese": "^2.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^5.0.1",
+    "rippleui": "^1.12.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-cljs-test": "^0.1.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.2",
+    "shadow-cljs": "^2.26.4",
+    "tailwindcss": "^3.4.1"
+  }
+}

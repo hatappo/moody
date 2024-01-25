@@ -1,0 +1,11 @@
+{:linters {:unresolved-symbol {:exclude []}
+           :unused-namespace {:exclude [moody.core]}}
+ :lint-as {day8.re-frame.tracing/fn-traced clojure.core/fn
+           day8.re-frame.tracing/defn-traced clojure.core/defn
+           day8.re-frame.tracing-stubs/fn-traced clojure.core/fn
+           day8.re-frame.tracing-stubs/defn-traced clojure.core/defn}
+ :output {:exclude-files [".calva/output-window/output.calva-repl"]}
+ :ns-groups [{:pattern ".*-test"
+              :name test-namespaces}] 
+ :config-in-ns {test-namespaces {:linters {:warn-on-reflection {:level :off}}}}
+}

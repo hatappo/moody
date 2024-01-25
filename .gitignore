@@ -1,0 +1,49 @@
+# General
+.env
+
+# Mac
+.DS_Store
+
+# VSCode
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/extensions.json
+# Calva
+**/.calva/output-window/
+
+# IntelliJ
+.idea
+*.iml
+
+# LSP
+**/.lsp/.cache/
+
+# Node
+node_modules
+.node_repl
+
+# TailwindCSS
+/public/css/output.css
+
+
+# Clojure(Script)
+.lein-repl-history
+.nrepl-repl-history
+profiles.clj
+/.lein-*
+/.nrepl-port
+/.prepl-port
+
+# shadow-cljs
+/public/js/cljs-runtime
+/public/js/main.js
+/public/js/manifest.edn
+/public/js/manifest.json
+.shadow-cljs
+/target
+/out
+
+# Clj-kondo
+**/.clj-kondo/.cache/
+**/.clj-kondo/*
+!**/.clj-kondo/config.edn
