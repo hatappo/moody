@@ -7,7 +7,15 @@
     "type": "git",
     "url": ""
   },
+  "lint-staged": {
+    "*.{clj,cljs,cljc,bb,edn}": "cljstyle fix",
+    "*.{js,jsx,cjs,mjs,json}": "prettier --write",
+    "*.{ts,tsx,cts,mts}": "prettier --write",
+    "*.{html,css,scss}": "prettier --write",
+    ".github/workflows/*.{yaml,yml}": "prettier --write"
+  },
   "scripts": {
+    "prepare": "husky install",
     "node": "shadow-cljs server",
     "test": "shadow-cljs compile test-local-server && node out/node-tests.js; sh bin/print-by-status.sh",
     "dev:test": "shadow-cljs watch test-local-server --config-merge '{:autorun true}'",
@@ -32,6 +40,7 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "husky": "^8.0.3",
     "karma-chrome-launcher": "^3.2.0",
     "karma-cljs-test": "^0.1.0",
     "lint-staged": "^15.2.0",
