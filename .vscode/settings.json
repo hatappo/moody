@@ -1,0 +1,23 @@
+{
+  // "saveAndRun": {
+  //   "commands": [
+  //     {
+  //       "cmd": "cljstyle fix ${file}",
+  //       "match": "\\.(clj[cs]?|bb|edn)$",
+  //       "silent": true,
+  //       "useShortcut": false
+  //     }
+  //   ]
+  // },
+  "[clojure]": {
+    "editor.formatOnSave": false
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ":class\\s+\"([^\"]*)\"",
+    ":[\\w-.#>]+\\.([\\w-]*)"
+  ],
+  "tailwindCSS.includeLanguages": {
+    "clojure": "html"
+  },
+  "cSpell.words": ["rippleui", "seafoam", "tailwindcss", "taoensso"]
+}
