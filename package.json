@@ -1,11 +1,15 @@
 {
-  "name": "dev-tokoro",
+  "name": "moody-development",
   "version": "0.0.1",
   "description": "Utilities for web development on both browser and command line",
   "private": false,
   "repository": {
     "type": "git",
     "url": ""
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   },
   "lint-staged": {
     "*.{clj,cljs,cljc,bb,edn}": "cljstyle fix",
