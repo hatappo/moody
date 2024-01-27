@@ -6,3 +6,13 @@
  :feature-summaries
  (fn [db _]
    (get-in db [:master :feature-summaries])))
+
+(reg-sub
+ :input-text
+ (fn [db _]
+   (get-in db [:conversion :input-text])))
+
+(reg-sub
+ :output-text
+ (fn [db _]
+   (get-in db [:conversion :output-text])))

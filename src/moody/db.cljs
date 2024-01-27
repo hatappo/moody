@@ -3,8 +3,7 @@
    ["react-icons/bs" :as icons-bs]
    ["react-icons/vsc" :as icons-vsc]
    [day8.re-frame.tracing-stubs :refer-macros [fn-traced]]
-   [re-frame.core :as rf]
-   [reagent.core :as r]))
+   [re-frame.core :as rf]))
 
 (def master-db
   {:feature-summaries
@@ -17,8 +16,8 @@
 
 (def initial-app-db
   {:master master-db
-   :conversion {:input-text "<a href=\"/foo/bar#\">あいうえお</a>"
-                :output-text "[:a {:href \"/for/bar#\"} \"あいうえお\"]"}
+   :conversion {:input-text "<a href=\"/foo/bar#\">hello</a>"
+                :output-text "[:a {:href \"/for/bar#\"} \"hello\"]"}
    :nav {:active-page nil}})
 
 (rf/reg-event-db
