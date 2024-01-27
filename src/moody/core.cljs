@@ -6,6 +6,7 @@
    [moody.errors.errors-events]
    [moody.errors.errors-subs]
    [moody.events]
+   [moody.feature.feature-subs]
    [moody.feature.hiccup-page :refer [hiccup-page]]
    [moody.home.views.home-page :refer [home-page]]
    [moody.nav.nav :refer [nav]]
