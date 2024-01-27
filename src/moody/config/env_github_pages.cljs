@@ -6,5 +6,5 @@
   []
   {:id :github-pages
    :log-level :warn
-   :local? false
+   :dev? false
    :github-pages? true})

@@ -3,6 +3,7 @@
    ["react-icons/si" :refer [SiClojure]]
    ["react-icons/vsc" :refer [VscGear VscGithub VscHome]]
    [moody.components.icons :refer [menu-icon]]
+   [moody.config.env :as env]
    [moody.router :as router]))
 
 (defn nav
@@ -17,7 +18,9 @@
          [:img {:src "/img/moody.jpg" :class "m-3 w-7 h-7 rounded-md"}]
          [:div {:class "flex flex-col"}
           [:span "Moody"]
-          [:span {:class "text-xs font-normal text-content2"} "Dev Tools"]]]]
+          [:span {:class "text-xs font-normal text-content2"} "Dev Tools"]]
+         (when (:dev? (env/config))
+           [:span {:class "badge badge-outline-secondary mx-4"} "Dev env"])]]
 
        [:section {:class "sidebar-content"}
         [:nav {:class "menu rounded-md"}

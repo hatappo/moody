@@ -31,14 +31,14 @@
   (let [active-page @(rf/subscribe [:active-page])]
     [:div {:class "flex flex-row sm:gap-10"}
      [:div {:class "sm:w-full sm:max-w-[18rem]"}
-      ;;  side bar toggle checkbox (invisible)
+      ;;  sidebar toggle checkbox (invisible)
       [:input {:type "checkbox" :id "sidebar-mobile-fixed" :class "sidebar-state"}]
-      ;;  side bar closer on mobile
+      ;;  sidebar closer on mobile
       [:label {:for "sidebar-mobile-fixed" :class "sidebar-overlay"}]
       [nav]]
      [:main {:class "flex w-full flex-col p-4"}
       [:div {:class "w-fit"}
-       ;;  side bar opener on mobile
+       ;;  sidebar opener on mobile
        [:label {:for "sidebar-mobile-fixed", :class "btn-primary btn sm:hidden"} "Open Sidebar"]]
       [pages active-page]]]))
 

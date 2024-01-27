@@ -1,10 +1,10 @@
-(ns moody.config.env-local)
+(ns moody.config.env-dev)
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
 
 (defn config
   []
-  {:id :local
+  {:id :dev
    :log-level :trace
-   :local? true
+   :dev? true
    :gh? false})
