@@ -1,10 +1,21 @@
 (ns moody.config.env)
 
-#_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
+(goog-define moody-env "disabled default value to be replaced with shadow-cljs in compile time")
 
 (defn config
   []
-  {:id :none
-   :log-level :trace
-   :local? false
-   :gh? false})
+  (case moody-env
+
+    "DEV"
+    {:env-id :dev
+     :log-level :info
+     :dev? true
+     :gh? false}
+
+    "PROD"
+    {:env-id :github-pages
+     :log-level :warn
+     :dev? false
+     :github-pages? true}
+
+    (js/Error. "Illegal moody-env value: " moody-env)))

@@ -1,19 +1,21 @@
 (ns moody.feature.hiccup-page
   (:require
    ["@monaco-editor/react" :refer [Editor]]
-   [re-frame.core :as rf]
-   [reagent.core :as r]
-   [taoensso.timbre :as timbre]))
+   [moody.db.const :refer [input-data-types]]
+   [re-frame.core :as rf]))
 
 (defn hiccup-page
   []
   ;; [:f>]
-  (let [options-ratom (r/atom {:input-data-type "jsx"
-                               :pretty? true})
+  (let [;; options-ratom (r/atom {:input-data-type "jsx"
+        ;;                        :pretty? true})
+        set-options (fn [options]
+                      (rf/dispatch [:set-options options]))
         convert (fn [input-text]
-                  (rf/dispatch [:convert input-text @options-ratom]))]
+                  (rf/dispatch [:convert input-text]))]
     (fn []
-      (let [input-text @(rf/subscribe [:input-text])
+      (let [options @(rf/subscribe [:options])
+            input-text @(rf/subscribe [:input-text])
             output-text @(rf/subscribe [:output-text])]
         [:article
          [:h2 {:class "text-content1 text-lg mt-4"} "HTML - Hiccup"]
@@ -22,12 +24,12 @@
            [:div {:class "my-4"}
             "Input"
             [:select {:class "select select-ghost-secondary mx-4"
-                      :value (:input-data-type @options-ratom)
+                      :value (:input-data-type options)
                       :on-change (fn [e]
-                                   (swap! options-ratom assoc :input-data-type (.. e -target -value))
+                                   ;; (swap! options-ratom assoc :input-data-type (.. e -target -value))
+                                   (set-options (assoc options :input-data-type (.. e -target -value)))
                                    (convert input-text))}
-             [:option {:value "html"} "HTML"]
-             [:option {:value "jsx"} "JSX"]]]
+             (map (fn [{:keys [value label]}] ^{:key value} [:option {:value value} label]) input-data-types)]]
            [:div {:class "max-w-full my-1"}
             [:> Editor {:class ""
                         :height "75vh"

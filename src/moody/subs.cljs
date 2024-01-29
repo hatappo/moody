@@ -3,9 +3,9 @@
    [re-frame.core :refer [reg-sub]]))
 
 (reg-sub
- :feature-summaries
+ :options
  (fn [db _]
-   (get-in db [:master :feature-summaries])))
+   (get-in db [:conversion :options])))
 
 (reg-sub
  :input-text

@@ -1,13 +1,13 @@
 (ns moody.cards.cards-page
   (:require
-   [moody.router :as router]
-   [re-frame.core :as rf]))
+   [moody.db.const :as const]
+   [moody.router :as router]))
 
 (defn cards-page
   []
   ;; [:f>]
   (fn []
-    (let [feature-summaries @(rf/subscribe [:feature-summaries])]
+    (let [_ nil]
       [:article
        [:h2 {:class "text-content1 text-lg my-4"} "カテゴリ"]
        [:div {:class "flex flex-wrap my-4 gap-4"}
@@ -22,5 +22,5 @@
                              [:span code-let])]
                           [:h3 {:class "text-content1 text-base"} title]
                           [:p {:class "text-content2 text-sm"} desc]]]])
-                     feature-summaries)
+                     const/page-summaries)
         #_[:div {:class "flex h-48 w-32 items-center justify-center border-2 border-dashed border-border bg-gray-1"} "+"]]])))

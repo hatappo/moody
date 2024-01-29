@@ -2,7 +2,7 @@
   (:require
    [moody.cards.cards-page :refer [cards-page]]
    [moody.config.env :refer [config]]
-   [moody.db]
+   [moody.db.db]
    [moody.errors.errors-events]
    [moody.errors.errors-subs]
    [moody.events]
@@ -49,9 +49,8 @@
 
 (defn ^:export init
   []
-  (let [log-level (:log-level (config))]
-    (js/console.log  "log-level:" log-level)
-    (timbre/set-min-level! log-level)
-    (rf/dispatch-sync [:initialize-db])
-    (router/start!)
-    (start)))
+  (js/console.log (select-keys (config) [:env-id :log-level]))
+  (timbre/set-min-level! (:log-level (config)))
+  (rf/dispatch-sync [:initialize-db])
+  (router/start!)
+  (start))

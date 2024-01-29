@@ -1,4 +1,4 @@
-(ns moody.helpers.str-helpers
+(ns moody.helpers.helpers
   (:require
    [cljs.pprint :refer [pprint]]
    [clojure.set :refer [rename-keys]]

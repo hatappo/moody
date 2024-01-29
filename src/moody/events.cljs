@@ -5,11 +5,17 @@
    [day8.re-frame.tracing-stubs :refer [fn-traced]]
    [hickory.core :refer [as-hiccup as-hickory parse-fragment]]
    [hickory.render :refer [hickory-to-html]]
-   [moody.helpers.str-helpers :refer [pprint-str
-                                      rename-jsx-specific-attrs-to-html-attrs
-                                      strip-newline-and-tab]]
+   [moody.helpers.helpers :refer [pprint-str
+                                  rename-jsx-specific-attrs-to-html-attrs
+                                  strip-newline-and-tab]]
    [re-frame.core :refer [reg-event-db]]
    [taoensso.timbre :as timbre]))
+
+(reg-event-db
+ :set-options
+ (fn-traced [db [_ options]]
+            (timbre/info "options:" options)
+            (assoc-in db [:conversion :options] options)))
 
 (defn- convert-jsx-to-html
   [jsx]
@@ -38,13 +44,15 @@
 
 (reg-event-db
  :convert
- (fn-traced [db [_ input-text {:keys [input-data-type] :as options}]]
-            (timbre/trace "input-text:" input-text)
-            (timbre/info "options:" options)
-            (let [output-text (case input-data-type
-                                "html" (convert-html-to-hiccup input-text options)
-                                "jsx" (convert-jsx-to-hiccup input-text options)
-                                "error: unexpected input-data-type")]
-              (-> db
-                  (assoc-in [:conversion :input-text] input-text)
-                  (assoc-in [:conversion :output-text] output-text)))))
+ (fn-traced [db [_ input-text]]
+            (timbre/trace {:event :convert :input-text input-text})
+            (let [{:keys [input-data-type] :as options} (-> db :conversion :options)]
+              (timbre/info {:event :convert :options options})
+              (let [output-text (case input-data-type
+                                  "" "(select input data type such as 'HTML', 'JSX', etc.)"
+                                  "html" (convert-html-to-hiccup input-text options)
+                                  "jsx" (convert-jsx-to-hiccup input-text options)
+                                  "(error: unexpected input-data-type)")]
+                (-> db
+                    (assoc-in [:conversion :input-text] input-text)
+                    (assoc-in [:conversion :output-text] output-text))))))
