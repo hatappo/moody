@@ -14,8 +14,7 @@
    [moody.router :as router]
    [moody.subs]
    [re-frame.core :as rf]
-   [reagent.dom :as dom]
-   ;;  [reagent.dom.client :as rdc]
+   [reagent.dom.client :as rdc]
    [taoensso.timbre :as timbre]))
 
 (defn pages
@@ -44,7 +43,9 @@
 
 (defn ^:dev/after-load start
   []
-  (dom/render [app] (.getElementById js/document "app")))
+  (-> (.getElementById js/document "app")
+      (rdc/create-root)
+      (rdc/render [app])))
 
 (defn ^:export init
   []
