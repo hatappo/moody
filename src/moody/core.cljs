@@ -35,10 +35,10 @@
       ;;  sidebar closer on mobile
       [:label {:for "sidebar-mobile-fixed" :class "sidebar-overlay"}]
       [nav]]
-     [:main {:class "flex w-full flex-col p-4"}
+     [:main {:class "flex w-full flex-col py-2"}
       [:div {:class "w-fit"}
        ;;  sidebar opener on mobile
-       [:label {:for "sidebar-mobile-fixed", :class "btn-primary btn sm:hidden"} "Open Sidebar"]]
+       [:label {:for "sidebar-mobile-fixed" :class "btn-primary btn sm:hidden"} "Open Sidebar"]]
       [pages active-page]]]))
 
 (defn ^:dev/after-load start
@@ -49,8 +49,9 @@
 
 (defn ^:export init
   []
-  (rf/dispatch-sync [:initialize-db])
-  (timbre/set-min-level! (-> (config) :log-level))
-  (router/start!)
-  (js/console.log router/routes)
-  (start))
+  (let [log-level (:log-level (config))]
+    (js/console.log  "log-level:" log-level)
+    (timbre/set-min-level! log-level)
+    (rf/dispatch-sync [:initialize-db])
+    (router/start!)
+    (start)))

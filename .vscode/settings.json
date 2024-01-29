@@ -19,5 +19,16 @@
   "tailwindCSS.includeLanguages": {
     "clojure": "html"
   },
-  "cSpell.words": ["rippleui", "seafoam", "tailwindcss", "taoensso"]
+  "cSpell.words": [
+    "classname",
+    "htmlfor",
+    "Katsuyama",
+    "postwalk",
+    "prewalk",
+    "ratom",
+    "rippleui",
+    "seafoam",
+    "tailwindcss",
+    "taoensso"
+  ]
 }

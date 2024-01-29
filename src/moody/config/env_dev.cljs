@@ -5,6 +5,6 @@
 (defn config
   []
   {:id :dev
-   :log-level :trace
+   :log-level :info
    :dev? true
    :gh? false})
