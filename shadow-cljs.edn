@@ -15,6 +15,7 @@
                 [day8.re-frame/tracing "0.6.2"]
                 [day8.re-frame/tracing-stubs "0.6.2"]
                 [kibu/pushy "0.3.8"]
+                ;; [metosin/malli "0.14.0"]
                 [org.clj-commons/hickory "0.7.4"]
                 [org.slf4j/slf4j-simple "2.0.11"]
                 [tupelo "23.07.04"]
@@ -63,6 +64,6 @@
            :modules
            {:main {:init-fn moody.core/init}}
            :release
-           {:build-options {:ns-aliases {moody.config.env moody.config.env-github-pages}}
+           {:build-options {}}
             :closure-defines
             {moody.config.env/moody-env "PROD"}}}}}
