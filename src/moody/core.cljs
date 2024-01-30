@@ -12,7 +12,7 @@
    [moody.nav.nav-subs]
    [moody.router :as router]
    [moody.subs]
-   [moody.tools.conversion-page :refer [hiccup-page]]
+   [moody.tools.conversion-page :refer [conversion-page]]
    [re-frame.core :as rf]
    [reagent.dom.client :as rdc]
    [taoensso.timbre :as timbre]))
@@ -22,8 +22,8 @@
   (case page-name
     :home [home-page]
     :cards [cards-page]
-    :conversions [hiccup-page]
-    :conversion [hiccup-page]
+    :conversions [conversion-page]
+    :conversion [conversion-page]
     [home-page]))
 
 (defn app

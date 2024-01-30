@@ -31,10 +31,12 @@
     "malli",
     "postwalk",
     "prewalk",
+    "ramdomly",
     "ratom",
     "rippleui",
     "seafoam",
     "tailwindcss",
-    "taoensso"
+    "taoensso",
+    "zipmap"
   ]
 }
