@@ -64,6 +64,6 @@
            :modules
            {:main {:init-fn moody.core/init}}
            :release
-           {:build-options {}}
+           {:build-options {}
             :closure-defines
             {moody.config.env/moody-env "PROD"}}}}}
