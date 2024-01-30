@@ -8,10 +8,8 @@
                   "hoge" {"" :hoge}
                   "cards/" :cards
                   "settings/" :settings
-                  "hiccup/" :hiccup
-                  "cfg/" {"sys" :cfg-sys
-                          "app" :cfg-app
-                          "tnt" :cfg-tnt}}])
+                  "conversion/" {"" :conversions
+                                 [:tool-type] :conversion}}])
 
 (def history
   (let [dispatch #(rf/dispatch [:route-changed %]) ; NOTE: dispatch-sync?

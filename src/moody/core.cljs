@@ -6,13 +6,13 @@
    [moody.errors.errors-events]
    [moody.errors.errors-subs]
    [moody.events]
-   [moody.feature.hiccup-page :refer [hiccup-page]]
    [moody.home.views.home-page :refer [home-page]]
    [moody.nav.nav :refer [nav]]
    [moody.nav.nav-events]
    [moody.nav.nav-subs]
    [moody.router :as router]
    [moody.subs]
+   [moody.tools.conversion-page :refer [hiccup-page]]
    [re-frame.core :as rf]
    [reagent.dom.client :as rdc]
    [taoensso.timbre :as timbre]))
@@ -22,7 +22,8 @@
   (case page-name
     :home [home-page]
     :cards [cards-page]
-    :hiccup [hiccup-page]
+    :conversions [hiccup-page]
+    :conversion [hiccup-page]
     [home-page]))
 
 (defn app

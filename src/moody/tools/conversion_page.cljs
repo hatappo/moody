@@ -1,35 +1,33 @@
-(ns moody.feature.hiccup-page
+(ns moody.tools.conversion-page
   (:require
    ["@monaco-editor/react" :refer [Editor]]
-   [moody.db.const :refer [input-data-types]]
+   [moody.db.const :refer [conversion-tools]]
    [re-frame.core :as rf]))
 
 (defn hiccup-page
   []
   ;; [:f>]
-  (let [;; options-ratom (r/atom {:input-data-type "jsx"
-        ;;                        :pretty? true})
-        set-options (fn [options]
-                      (rf/dispatch [:set-options options]))
+  (let [set-tool-type (fn [tool-type]
+                        (rf/dispatch [:set-tool-type tool-type]))
         convert (fn [input-text]
                   (rf/dispatch [:convert input-text]))]
     (fn []
-      (let [options @(rf/subscribe [:options])
+      (let [{:keys [tool-type]} @(rf/subscribe [:nav])
             input-text @(rf/subscribe [:input-text])
-            output-text @(rf/subscribe [:output-text])]
+            output-text @(rf/subscribe [:output-text])
+            #_#_options @(rf/subscribe [:options])]
         [:article
-         [:h2 {:class "text-content1 text-lg mt-4"} "HTML - Hiccup"]
-         [:section {:class "grid grid-flow-col justify-stretch gap-4 py-2"}
+         [:h2 {:class "text-content1 text-lg my-4"} "Data Format Conversion"]
+         [:select {:class "select select-ghost-primary"
+                   :value tool-type
+                   :on-change (fn [e]
+                                (set-tool-type (.. e -target -value))
+                                (convert input-text))}
+          (map (fn [{:keys [tool-type label]}] ^{:key tool-type} [:option {:value tool-type} label]) conversion-tools)]
+         [:section {:class "grid grid-flow-col justify-stretch gap-4"}
           [:div {:class "max-w-full"}
            [:div {:class "my-4"}
-            "Input"
-            [:select {:class "select select-ghost-secondary mx-4"
-                      :value (:input-data-type options)
-                      :on-change (fn [e]
-                                   ;; (swap! options-ratom assoc :input-data-type (.. e -target -value))
-                                   (set-options (assoc options :input-data-type (.. e -target -value)))
-                                   (convert input-text))}
-             (map (fn [{:keys [value label]}] ^{:key value} [:option {:value value} label]) input-data-types)]]
+            "Input"]
            [:div {:class "max-w-full my-1"}
             [:> Editor {:class ""
                         :height "75vh"
@@ -42,9 +40,7 @@
                         :defaultLanguage "html"}]]]
           [:div {:class "max-w-full"}
            [:div {:class "my-4"}
-            "Output"
-            [:select {:class "select select-ghost-secondary mx-4"}
-             [:option "Hiccup"]]]
+            "Output"]
            [:div {:class "max-w-full my-1"}
             [:> Editor {:class ""
                         :height "75vh"

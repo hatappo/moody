@@ -33,7 +33,7 @@
        strip-newline-and-tab
        parse-fragment
        (map as-hiccup)
-       (#(if pretty? (map pprint-str %) (map pr-str %)))
+       (map (if pretty? pprint-str pr-str))
        (str/join "")))
 
 (defn- convert-jsx-to-hiccup
@@ -45,13 +45,14 @@
 (reg-event-db
  :convert
  (fn-traced [db [_ input-text]]
-            (let [{:keys [input-data-type] :as options} (-> db :conversion :options)]
+            (let [options (-> db :conversion :options)
+                  {:keys [tool-type] :as nav} (-> db :nav)]
               (timbre/trace {:event :convert :input-text input-text})
-              (timbre/info {:event :convert :options options})
-              (let [output-text (case input-data-type
+              (timbre/info {:event :convert :nav nav :options options})
+              (let [output-text (case tool-type
                                   "" "(select input data type such as 'HTML', 'JSX', etc.)"
-                                  "html" (convert-html-to-hiccup input-text options)
-                                  "jsx" (convert-jsx-to-hiccup input-text options)
+                                  "html2hiccup" (convert-html-to-hiccup input-text options)
+                                  "jsx2hiccup" (convert-jsx-to-hiccup input-text options)
                                   "(error: unexpected input-data-type)")]
                 (-> db
                     (assoc-in [:conversion :input-text] input-text)

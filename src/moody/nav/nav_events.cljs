@@ -2,7 +2,8 @@
   (:require
    [day8.re-frame.tracing-stubs :refer-macros [fn-traced]]
    [moody.router :as router]
-   [re-frame.core :refer [path reg-event-db reg-event-fx reg-fx]]))
+   [re-frame.core :refer [path reg-event-db reg-event-fx reg-fx]]
+   [taoensso.timbre :as timbre]))
 
 (def nav-interceptors [(path :nav)])
 
@@ -14,15 +15,17 @@
 (reg-event-fx
  :route-changed
  nav-interceptors
- (fn-traced [{nav :db} [_ {:keys [handler route-params]}]]
-            (let [nav (assoc nav :active-page handler)]
+ (fn-traced [{nav :db} [_ {:keys [handler route-params] :as params}]]
+            (timbre/info {:event :route-changed :params params})
+            (let [nav (-> nav
+                          (assoc :active-page handler)
+                          (assoc :tool-type (:tool-type route-params)))]
               (case handler
                 :home {:db nav}
-                :hoge {:db nav}
                 :cards {:db nav}
                 :settings {:db nav}
-                :hiccup {:db nav}
-
+                :conversions {:db nav}
+                :conversion {:db nav}
                 :inbox
                 {:db (assoc nav :active-inbox (keyword (:inbox-id route-params)))}))))
 
@@ -37,3 +40,9 @@
  nav-interceptors
  (fn-traced [nav [_ active-page]]
             (assoc nav :active-page active-page)))
+
+(reg-event-db
+ :set-tool-type
+ nav-interceptors
+ (fn-traced [nav [_ tool-type]]
+            (assoc nav :tool-type tool-type)))

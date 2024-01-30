@@ -4,6 +4,7 @@
    ["react-icons/vsc" :refer [VscGear VscGithub VscHome]]
    [moody.components.icons :refer [menu-icon]]
    [moody.config.env :as env]
+   [moody.db.const :as const]
    [moody.router :as router]))
 
 (defn nav
@@ -45,9 +46,11 @@
              [:<> menu-icon]]
             [:div {:class "menu-item-collapse"}
              [:div {:class "min-h-0"}
-              [:a {:href (router/path-for :hiccup)}
-               [:label {:class "menu-item ml-6"} "HTML <-> Hiccup"]]
-              [:label {:class "menu-item menu-item-disabled ml-6"} "JSON <-> EDN"]]]]]]
+              (map (fn [{:keys [tool-type tool-category title]}]
+                     ^{:key tool-type}
+                     [:a {:href (router/path-for tool-category :tool-type tool-type)}
+                      [:label {:class "menu-item ml-6"} title]])
+                   const/clojure-tools)]]]]]
 
          [:div {:class "divider my-0"}]
 

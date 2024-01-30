@@ -7,18 +7,9 @@
   [:f>
    (fn []
      (let [_a nil]
-       [:article {:class "m-4"}
-
-        [:button {:class "btn btn-primary"} "Hello World!"]
-
-
-        [:section {:class "m-20"}
-         "Home"
-         [:ul {:class "list-disc text-sm"}
-          [:li {:class "m-2 p-2 flex flex-row align-middle"}
-           [:a {:class "link" :href (router/path-for :home)}
-            "aaaa"]]]
-         [:ul {:class "list-disc text-sm"}
-          [:li {:class "m-2 p-2 flex flex-row align-middle"}
-           [:a {:class "link" :href (router/path-for :home)}
-            "bbbb"]]]]]))])
+       [:article
+        [:h2 {:class "text-content1 text-xl my-4"} "Moody Dev Tools"]
+        [:section {:class "m-4"}
+         [:p "It accepts and transforms various data structures from left to right"]
+         [:a {:href (router/path-for :cards)}
+          [:button {:class "btn btn-solid-primary my-4"} "Show All Tools"]]]]))])
