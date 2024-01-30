@@ -20,7 +20,7 @@
        strip-newline-and-tab
        parse-fragment
        (map as-hickory)
-       (prewalk (fn [node] (if (map? node) node #_(rename-jsx-specific-attrs-to-html-attrs node) node)))
+       (prewalk (fn [node] (if (map? node) (rename-jsx-specific-attrs-to-html-attrs node) node)))
        (map hickory-to-html)
        (str/join "")))
 
