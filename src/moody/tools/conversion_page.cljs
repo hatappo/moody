@@ -9,11 +9,20 @@
 
 (defn conversion-page
   []
-  (let [initial-options {:pretty? true}
+  (let [initial-options {:pretty? true :input-lang "plaintext" :output-lang "plaintext"}
         options-ratom (r/atom initial-options)
+        editor-ratom (r/atom nil)
+        monaco-ratom (r/atom nil)
         set-tool-type (fn [tool-type]
                         (rf/dispatch [:set-tool-type tool-type]))
         update-input-text (fn [input-text]
+
+                            (js/console.log (let [edt @monaco-ratom] (-> edt js->clj (get "editor"))))
+                            (js/console.log (let [^js monaco @monaco-ratom] (.-editor monaco)))
+                            (let [^js monaco @monaco-ratom
+                                  ^js editor @editor-ratom]
+                              (.setModelLanguage (.-editor monaco) (.getModel editor) "javascript"))
+
                             (rf/dispatch [:update-input-text input-text @options-ratom]))]
     (fn []
       (let [{:keys [tool-type]} @(rf/subscribe [:nav])
@@ -57,6 +66,7 @@
                         :theme "vs-dark"
                         :value input-text
                         :on-change update-input-text
+                        :on-mount (fn [editor, monaco] (reset! editor-ratom editor) (reset! monaco-ratom monaco))
                         :defaultLanguage "html"}]]]
           [:div {:class "max-w-full"}
            [:div {:class "flex items-center w-full"}

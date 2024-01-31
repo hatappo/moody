@@ -98,9 +98,10 @@
    title         ; used as card title in `all-tools` page
    label         ; used as dropdown text in `conversion` page
    desc
-   convert-fn])
+   convert-fn
+   relevant-words-text])
 
-(def tools
+(def ^{:private true} tools-raw
   [{:tool-type :html2hiccup
     :tool-category :conversion
     :tool-tags #{:clojure :html :hiccup}
@@ -135,7 +136,7 @@
     :icon-html ".... <br/> ↓ <br/> ...."
     :title "Noop"
     :label "Noop"
-    :desc "It's useful to just prettify code. The data format is automatically judged"
+    :desc "It's useful to just prettify (format) code. The data format is automatically judged"
     :convert-fn convert-with-noop}
    {:tool-type :roulette
     :tool-category :conversion
@@ -146,6 +147,16 @@
     :label "Roulette"
     :desc ""
     :convert-fn convert-anything-to-something}])
+
+(defn assoc-relevant-words-text
+  [tools-raw]
+  (map (fn [{:keys [title label desc tool-tags] :as tool}]
+         (let [tag-words-text (str/join tool-tags)
+               relevant-words-text (str "\n" title "\n" label "\n" desc "\n" tag-words-text)]
+           (assoc tool :relevant-words-text (str/lower-case relevant-words-text))))
+       tools-raw))
+
+(def tools (assoc-relevant-words-text tools-raw))
 
 (def tools-by-tool-type
   (zipmap (map :tool-type tools) tools))
