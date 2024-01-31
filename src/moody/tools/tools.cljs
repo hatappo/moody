@@ -1,15 +1,18 @@
 (ns moody.tools.tools
   (:require
+   ["js-beautify" :as js-beautify]
    ["react-icons/bs" :as icons-bs]
    ["react-icons/gi" :as icons-gi]
    ["react-icons/ti" :as icons-ti]
    ["react-icons/vsc" :as icons-vsc]
+   ["sql-formatter" :as sql-formatter]
    [clojure.string :as str]
    [clojure.walk :refer [prewalk]]
-   [expound.printer :refer [pprint-str]]
+   [edamame.core :refer [parse-string]]
    [hickory.core :refer [as-hiccup as-hickory parse-fragment]]
    [hickory.render :refer [hickory-to-html]]
-   [moody.helpers.helpers :refer [determine-data-structure-type
+   [moody.helpers.helpers :refer [determine-data-format html? json?
+                                  pprint-str
                                   rename-jsx-specific-attrs-to-html-attrs
                                   strip-newline-and-tab]]
    [taoensso.timbre :as timbre]))
@@ -26,31 +29,50 @@
 
 (defn- convert-html-to-hiccup
   [html {:keys [pretty?]}]
-  (->> html
-       strip-newline-and-tab
-       parse-fragment
-       (map as-hiccup)
-       (map (if pretty? pprint-str pr-str))
-       (str/join "")))
+  (if-not (html? html)
+    "parse error"
+    (->> html
+         strip-newline-and-tab
+         parse-fragment
+         (map as-hiccup)
+         (map (if pretty? pprint-str pr-str))
+         (str/join ""))))
 
 (defn- convert-jsx-to-hiccup
   [jsx options]
-  (-> jsx
-      (convert-jsx-to-html options)
-      (convert-html-to-hiccup options)))
+  (if-not (html? jsx)
+    "parse error"
+    (-> jsx
+        (convert-jsx-to-html options)
+        (convert-html-to-hiccup options))))
+
+(defn- convert-json-to-edn
+  [json {:keys [pretty?]}]
+  (if-not (json? json)
+    "parse error"
+    (-> json
+        js/JSON.parse
+        (js->clj :keywordize-keys true)
+        ((if pretty? pprint-str pr-str)))))
 
 (defn- convert-with-noop
   [text {:keys [pretty?]}]
-  (let [type (determine-data-structure-type text)]
-    (case type
-      :json "TODO: not implemented"
-      :yaml "TODO: not implemented"
-      :toml "TODO: not implemented"
-      :xml "TODO: not implemented"
-      :kdl "TODO: not implemented"
-      :edn ((if pretty? pprint-str println-str) text)
-      :hiccup ((if pretty? pprint-str println-str) text)
-      text)))
+  (if (= 0 (count (str/trim text)))
+    ""
+    (let [data-format (determine-data-format text)]
+      (timbre/info {:determined-data-format data-format})
+      (case data-format
+        :html (str "<!-- As html code -->\n"
+                   (.html js-beautify text #js {:indent_size 2 :end_with_newline true :preserve_newlines false :wrap_attributes "force-expand-multiline" :wrap_attributes_min_attrs 2}))
+        :json (str "// As json code\n" (.stringify js/JSON (.parse js/JSON text) nil (when pretty? "  ")))
+        :yaml "TODO: not implemented"
+        :toml "TODO: not implemented"
+        :xml "TODO: not implemented"
+        :kdl "TODO: not implemented"
+        :clj (str "; As clojure code\n" ((if pretty? pprint-str println-str) (parse-string text)))
+        :sql (str "-- As sql query\n" (sql-formatter/format text #js {:keywordCase "upper" :dataTypeCase "upper" :functionCase "upper" :newlineBeforeSemicolon true}))
+        :unknown (str "\nunknown data-format.\n\n" text)
+        (str "error: unexpected data-format: " type)))))
 
 (declare convert)
 
@@ -105,7 +127,7 @@
     :title "JSON - EDN"
     :label "JSON -> EDN (Clojure)"
     :desc "Convert JSON and EDN to each other"
-    :convert-fn (fn [_json _options] "TODO: not implemented convert-fn")}
+    :convert-fn convert-json-to-edn}
    {:tool-type :noop
     :tool-category :conversion
     :tool-tags #{:others}
@@ -113,7 +135,7 @@
     :icon-html ".... <br/> ↓ <br/> ...."
     :title "Noop"
     :label "Noop"
-    :desc "Nothing. It can be used when you just want to format data, etc."
+    :desc "It's useful to just prettify code. The data format is automatically judged"
     :convert-fn convert-with-noop}
    {:tool-type :roulette
     :tool-category :conversion

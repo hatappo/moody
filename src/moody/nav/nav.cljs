@@ -1,7 +1,7 @@
 (ns moody.nav.nav
   (:require
-   ["react-icons/si" :refer [SiClojure]]
-   ["react-icons/vsc" :refer [VscGear VscGithub VscHome]]
+   ["react-icons/si" :as icons-si]
+   ["react-icons/vsc" :as icons-vsc]
    [moody.components.icons :refer [menu-icon]]
    [moody.config.env :as env]
    [moody.router :as router]
@@ -35,13 +35,13 @@
             [:a {:href (router/path-for :cards)}
              [:label {:class "menu-item justify-between" :for "menu-all"}
               [:div {:class "flex gap-2"}
-               [:> VscHome {:size "1.5em"}]
+               [:> icons-vsc/VscHome {:size "1.5em"}]
                [:span "All Tools"]]]]]
            [:li
             [:input {:type "checkbox" :id "menu-clojure" :class "menu-toggle"}]
             [:label {:class "menu-item justify-between" :for "menu-clojure"}
              [:div {:class "flex gap-2"}
-              [:> SiClojure {:size "1.5em"}]
+              [:> icons-si/SiClojure {:size "1.5em"}]
               [:span "Clojure"]]
              [:<> menu-icon]]
             [:div {:class "menu-item-collapse"}
@@ -61,9 +61,9 @@
            [:li
             [:a {:href (router/path-for :settings)}
              [:div {:class "menu-item"}
-              [:> VscGear {:size "1.5em"}]
+              [:> icons-vsc/VscGear {:size "1.5em"}]
               [:span "Settings"]]]]
            [:li
             [:a {:href "https://github.com/hatappo/moody" :target "_blank"}
              [:div {:class "menu-item"}
-              [:> VscGithub {:size "1.5em"}]]]]]]]]])))
+              [:> icons-vsc/VscGithub {:size "1.5em"}]]]]]]]]])))

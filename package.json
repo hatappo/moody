@@ -38,10 +38,12 @@
     "@monaco-editor/react": "^4.6.0",
     "create-react-class": "15.7.0",
     "encoding-japanese": "^2.0.0",
+    "js-beautify": "^1.14.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^5.0.1",
-    "rippleui": "^1.12.1"
+    "rippleui": "^1.12.1",
+    "sql-formatter": "^15.2.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

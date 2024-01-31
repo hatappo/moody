@@ -12,7 +12,7 @@
             (assoc-in db [:conversion :options] options)))
 
 (reg-event-db
- :convert
+ :update-input-text
  (fn-traced [db [_ input-text options]]
             (let [{:keys [tool-type] :as nav} (-> db :nav)]
               (timbre/trace {:event :convert :input-text input-text})
