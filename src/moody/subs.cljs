@@ -8,6 +8,11 @@
    (get-in db [:conversion :options])))
 
 (reg-sub
+ :editor-theme
+ (fn [db _]
+   (get-in db [:editor :theme])))
+
+(reg-sub
  :input-text
  (fn [db _]
    (get-in db [:conversion :input-text])))

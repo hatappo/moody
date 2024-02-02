@@ -21,3 +21,9 @@
                 (-> db
                     (assoc-in [:conversion :input-text] input-text)
                     (assoc-in [:conversion :output-text] output-text))))))
+
+(reg-event-db
+ :set-editor-theme
+ (fn-traced [nav [_ editor-theme]]
+            (js/console.log editor-theme)
+            (assoc-in nav [:editor :theme] editor-theme)))

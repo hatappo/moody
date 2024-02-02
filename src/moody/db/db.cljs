@@ -4,9 +4,10 @@
    [re-frame.core :as rf]))
 
 (def initial-app-db
-  {:conversion {:input-text "<a href=\"/foo/bar#\">hello</a>"
-                :output-text "[:a {:href \"/foo/bar#\"} \"hello\"]"}
-   :nav {:active-page nil}})
+  {:nav {:active-page nil}
+   :editor {:theme "vs-dark"}
+   :conversion {:input-text "<a href=\"/foo/bar#\">hello</a>"
+                :output-text "[:a {:href \"/foo/bar#\"} \"hello\"]"}})
 
 (rf/reg-event-db
  :initialize-db
