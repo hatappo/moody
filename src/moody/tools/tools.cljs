@@ -86,8 +86,9 @@
 
 (defn convert
   [text options tool-type]
-  (let [{:keys [convert-fn]} (get tools-by-tool-type (keyword tool-type) #(str "error: unexpected tool-type: " tool-type))]
-    (convert-fn text options)))
+  (when-not (str/blank? text)
+    (let [{:keys [convert-fn]} (get tools-by-tool-type (keyword tool-type) #(str "error: unexpected tool-type: " tool-type))]
+      (convert-fn text options))))
 
 (defrecord Tool
   [tool-type     ; used in url path, as unique identical name
