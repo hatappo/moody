@@ -50,8 +50,7 @@
               [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-2"}]
               "Paste"]]]
            [:div {:class "flex justify-center max-w-full"}
-            [:> Editor {:class ""
-                        :height "75vh"
+            [:> Editor {:height "75vh"
                         :width "99%"
                         :options {:minimap {:enabled false}
                                   :wordWrap "on"
@@ -71,10 +70,12 @@
              [:button {:class "btn btn-solid-primary"}
               [:> icons-lia/LiaCopySolid {:size "1.5em" :class "mr-2"}]
               "Copy"]
-             [:button {:class "btn btn-solid-primary"}
-              [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-1"}]
-              "→"
-              [:> icons-lia/LiaCopySolid {:size "1.5em" :class "ml-1"}]]]
+             [:span
+              {:class "tooltip tooltip-top", :data-tooltip "Paste the text on the clipboard to overwrite it with the conversion result."}
+              [:button {:class "btn btn-solid-primary"}
+               [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-1"}]
+               "&"
+               [:> icons-lia/LiaCopySolid {:size "1.5em" :class "ml-1"}]]]]
             [:div {:class "flex items-center justify-end w-full"}
              [:label {:for "pretty-checkbox"} "no-prettify"]
              [:input {:type "checkbox"
@@ -84,8 +85,7 @@
                       :class "switch switch-bordered-primary mx-1"}]]]
 
            [:div {:class "max-w-full"}
-            [:> Editor {:class ""
-                        :height "75vh"
+            [:> Editor {:height "75vh"
                         :width "99%"
                         :options {:minimap {:enabled false}
                                   :wordWrap "on"
