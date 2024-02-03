@@ -1,7 +1,13 @@
 (ns moody.tools.editor)
 
 (def themes
-  [{:theme-name "vs"}
-   {:theme-name "vs-dark"}
-   {:theme-name "hc-black"}
-   {:theme-name "hc-light"}])
+  [{:val "vs"}
+   {:val "vs-dark"}
+   {:val "hc-black"}
+   {:val "hc-light"}])
+
+(defn word-wrap-val
+  [^boolean word-wrap?]
+  (if word-wrap? "bounded" "off"))
+
+(def whitespace-options ["all" "none" "boundary" "selection" "trailing"])

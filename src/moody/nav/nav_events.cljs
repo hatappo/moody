@@ -23,9 +23,9 @@
               (case handler
                 :home {:db nav}
                 :cards {:db nav}
-                :settings {:db nav}
                 :conversions {:db nav}
                 :conversion {:db nav}
+                :settings {:db nav}
                 :inbox
                 {:db (assoc nav :active-inbox (keyword (:inbox-id route-params)))}))))
 

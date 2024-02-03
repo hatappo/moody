@@ -11,6 +11,7 @@
    [moody.nav.nav-events]
    [moody.nav.nav-subs]
    [moody.router :as router]
+   [moody.settings.settings-page :refer [settings-page]]
    [moody.subs]
    [moody.tools.conversion-page :refer [conversion-page]]
    [re-frame.core :as rf]
@@ -24,6 +25,7 @@
     :cards [cards-page]
     :conversions [conversion-page]
     :conversion [conversion-page]
+    :settings [settings-page]
     [home-page]))
 
 (defn app

@@ -24,6 +24,15 @@
 
 (reg-event-db
  :set-editor-theme
- (fn-traced [nav [_ editor-theme]]
-            (js/console.log editor-theme)
-            (assoc-in nav [:editor :theme] editor-theme)))
+ (fn-traced [db [_ editor-theme]]
+            (assoc-in db [:editor :theme] editor-theme)))
+
+(reg-event-db
+ :set-editor-word-wrap
+ (fn-traced [db [_ word-wrap]]
+            (assoc-in db [:editor :word-wrap] word-wrap)))
+
+(reg-event-db
+ :set-editor-whitespace-option
+ (fn-traced [db [_ whitespace-option]]
+            (assoc-in db [:editor :whitespace-option] whitespace-option)))

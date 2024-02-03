@@ -3,7 +3,7 @@
    ["@monaco-editor/react" :refer [Editor]]
    ["react-icons/lia" :as icons-lia]
    ["react-icons/lu" :as icons-lu]
-   [moody.tools.editor :refer [themes]]
+   [moody.tools.editor :refer [themes word-wrap-val]]
    [moody.tools.tools :refer [conversion-tools]]
    [re-frame.core :as rf]
    [reagent.core :as r]))
@@ -25,6 +25,8 @@
     (fn []
       (let [{:keys [tool-type]} @(rf/subscribe [:nav])
             editor-theme @(rf/subscribe [:editor-theme])
+            editor-word-wrap @(rf/subscribe [:editor-word-wrap])
+            editor-whitespace-option @(rf/subscribe [:editor-whitespace-option])
             input-text @(rf/subscribe [:input-text])
             output-text @(rf/subscribe [:output-text])]
         [:article
@@ -53,7 +55,8 @@
             [:> Editor {:height "75vh"
                         :width "99%"
                         :options {:minimap {:enabled false}
-                                  :wordWrap "on"
+                                  :wordWrap (word-wrap-val editor-word-wrap)
+                                  :renderWhitespace editor-whitespace-option
                                   :autoDetectHighContrast false}
                         :theme "vs-dark" ; なぜか効かないので on-mount で同様の設定を行っている
                         :value input-text
@@ -103,4 +106,4 @@
                                    (set-editor-theme a)
                                    ;;  JS オブジェクトなのでリアクティブに更新されない。そのため明示的に更新。
                                    (.setTheme (.-editor ^js @input-monaco-ratom) a)))}
-           (map (fn [{:keys [theme-name]}] ^{:key theme-name} [:option {:value theme-name} theme-name]) themes)]]]))))
+           (map (fn [{:keys [val]}] ^{:key val} [:option {:value val} val]) themes)]]]))))

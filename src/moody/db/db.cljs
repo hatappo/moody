@@ -5,7 +5,9 @@
 
 (def initial-app-db
   {:nav {:active-page nil}
-   :editor {:theme "vs-dark"}
+   :editor {:theme "vs-dark"
+            :word-wrap true
+            :whitespace-option "all"}
    :conversion {:input-text "<a href=\"/foo/bar#\">hello</a>"
                 :output-text "[:a {:href \"/foo/bar#\"} \"hello\"]"}})
 
