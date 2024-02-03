@@ -1,5 +1,6 @@
 (ns moody.nav.nav
   (:require
+   #_["react-icons/io5" :as icons-io5]
    ["react-icons/si" :as icons-si]
    ["react-icons/vsc" :as icons-vsc]
    [moody.components.icons :refer [menu-icon]]
@@ -56,7 +57,7 @@
 
            ;; Settings 
            [:section {:class "menu-section px-4"}
-            [:span {:class "menu-title"} "Settings"]
+            #_[:span {:class "menu-title"} "Settings"]
             [:ul {:class "menu-items"}
              [:li
               [:a {:href (router/path-for :settings)}
@@ -66,4 +67,5 @@
              [:li
               [:a {:href "https://github.com/hatappo/moody" :target "_blank"}
                [:div {:class "menu-item"}
-                [:> icons-vsc/VscGithub {:size "1.5em"}]]]]]]]]]))))
+                [:> icons-vsc/VscGithub {:size "1.5em"}]
+                #_[:> icons-io5/IoOpenOutline {:size "1.5em"}]]]]]]]]]))))

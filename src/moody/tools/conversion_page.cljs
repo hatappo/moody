@@ -29,9 +29,10 @@
             editor-whitespace-option @(rf/subscribe [:editor-whitespace-option])
             input-text @(rf/subscribe [:input-text])
             output-text @(rf/subscribe [:output-text])]
-        [:article
-         [:section {:class "p-2"}
-          [:h2 {:class "text-content1 text-lg my-2"} "Data Format Conversion"]
+        [:article {:class "flex flex-col gap-4"}
+         [:h2 {:class "text-xl my-8"}
+          "Data Format Conversion"]
+         [:section
           [:div {:class "flex items-center gap-6"}
            [:select {:class "select select-ghost-primary"
                      :value tool-type
@@ -39,7 +40,7 @@
                                   (set-tool-type (.. e -target -value))
                                   (update-input-text input-text))}
             (map (fn [{:keys [tool-type label]}] ^{:key tool-type} [:option {:value tool-type} label]) conversion-tools)]]]
-         [:section {:class "grid grid-flow-col justify-stretch gap-4 p-2"}
+         [:section {:class "grid grid-flow-col justify-stretch gap-4 "}
           [:div {:class "max-w-full"}
            [:div {:class "flex items-center my-2"}
             [:div {:class "ml-1"}
@@ -52,7 +53,7 @@
               [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-2"}]
               "Paste"]]]
            [:div {:class "flex justify-center max-w-full"}
-            [:> Editor {:height "75vh"
+            [:> Editor {:height "70vh"
                         :width "99%"
                         :options {:minimap {:enabled false}
                                   :wordWrap (word-wrap-val editor-word-wrap)
@@ -79,26 +80,27 @@
                [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-1"}]
                "&"
                [:> icons-lia/LiaCopySolid {:size "1.5em" :class "ml-1"}]]]]
-            [:div {:class "flex items-center justify-end w-full"}
-             [:label {:for "pretty-checkbox"} "no-prettify"]
-             [:input {:type "checkbox"
+            [:div {:class "flex items-center gap-2 justify-end w-full"}
+             [:label {:for "pretty-checkbox"}
+              "no-prettify"]
+             [:input {:class "switch switch-bordered-primary mr-2"
+                      :type "checkbox"
                       :id "pretty-checkbox"
                       :checked (not (:pretty? @options-ratom))
-                      :on-change (fn [_e] (swap! options-ratom update :pretty? not) (update-input-text input-text))
-                      :class "switch switch-bordered-primary mx-1"}]]]
+                      :on-change (fn [_e] (swap! options-ratom update :pretty? not) (update-input-text input-text))}]]]
 
            [:div {:class "max-w-full"}
-            [:> Editor {:height "75vh"
+            [:> Editor {:height "70vh"
                         :width "99%"
                         :options {:minimap {:enabled false}
-                                  :wordWrap "on"
+                                  :wordWrap (word-wrap-val editor-word-wrap)
                                   :read-only true}
                         :value (str output-text)
                         :on-mount (fn [editor, monaco]
                                     (reset! output-editor-ratom editor)
                                     (reset! output-monaco-ratom monaco))
                         :defaultLanguage "clojure"}]]]]
-         [:section {:class "p-2"}
+         [:section
           [:select {:class "select select-ghost-primary"
                     :value editor-theme
                     :on-change (fn [e]

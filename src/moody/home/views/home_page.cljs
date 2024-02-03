@@ -8,7 +8,8 @@
    (fn []
      (let [_a nil]
        [:article
-        [:h2 {:class "text-content1 text-xl my-4"} "Moody Dev Tools"]
+        [:h2 {:class "text-xl my-8"}
+         "Moody Dev Tools"]
         [:section {:class "m-4"}
          [:p "It accepts and transforms various data structures from left to right."]
          [:a {:href (router/path-for :cards)}
