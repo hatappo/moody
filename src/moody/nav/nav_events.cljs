@@ -1,6 +1,7 @@
 (ns moody.nav.nav-events
   (:require
    [day8.re-frame.tracing-stubs :refer-macros [fn-traced]]
+   [moody.cards.cards-page :refer [focus-search-input-on-keydown]]
    [moody.router :as router]
    [re-frame.core :refer [path reg-event-db reg-event-fx reg-fx]]
    [taoensso.timbre :as timbre]))
@@ -20,6 +21,9 @@
             (let [nav (-> nav
                           (assoc :active-page handler)
                           (assoc :tool-type (:tool-type route-params)))]
+              (if (= handler :cards)
+                (.addEventListener js/document "keydown" focus-search-input-on-keydown)
+                (.removeEventListener js/document "keydown" focus-search-input-on-keydown))
               (case handler
                 :home {:db nav}
                 :cards {:db nav}
