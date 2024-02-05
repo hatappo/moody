@@ -6,9 +6,9 @@ _Moody_
 
 _Moody Katsuyama_
 
-He just passes something off from right to left. This tool also just passes some data structures off from right to left
-
-[Moody Katsuyama - Wikipedia](https://ja.wikipedia.org/wiki/%E3%83%A0%E3%83%BC%E3%83%87%E3%82%A3%E5%8B%9D%E5%B1%B1)
+> He just passes something off from right to left. This tool also just passes some data structures off from right to left
+> 
+> [Moody Katsuyama - Wikipedia](https://ja.wikipedia.org/wiki/%E3%83%A0%E3%83%BC%E3%83%87%E3%82%A3%E5%8B%9D%E5%B1%B1)
 
 
 
@@ -44,7 +44,7 @@ npm run dev
 
 
 
-## memo
+## Note
 
 ```clj
 cljs꞉user꞉> 

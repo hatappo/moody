@@ -15,7 +15,6 @@
       (let [editor-theme @(rf/subscribe [:editor-theme])
             editor-word-wrap @(rf/subscribe [:editor-word-wrap])
             editor-whitespace-option @(rf/subscribe [:editor-whitespace-option])]
-        (js/console.log editor-whitespace-option)
         [:article {:class "flex flex-col gap-4"}
          [:h2 {:class "text-xl my-8"}
           "Settings"]

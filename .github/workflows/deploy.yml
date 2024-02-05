@@ -17,12 +17,10 @@ jobs:
         with:
           node-version: 20
           cache: npm
-
-      - name: Install dependencies
+      - name: Install JavaScript dependencies
         run: npm ci
       - name: Build assets
         run: npm run clean && npm run build
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
