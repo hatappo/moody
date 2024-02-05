@@ -47,9 +47,9 @@
                [:<> menu-icon]]
               [:div {:class "menu-item-collapse"}
                [:div {:class "min-h-0"}
-                (map (fn [{:keys [tool-type tool-category title]}]
+                (map (fn [{:keys [tool-type input-type output-type title]}]
                        ^{:key tool-type}
-                       [:a {:href (router/path-for tool-category :tool-type tool-type)}
+                       [:a {:href (router/path-for :conversion :input-type input-type :output-type output-type)}
                         [:label {:class "menu-item ml-6"} title]])
                      const/clojure-tools)]]]]]
 

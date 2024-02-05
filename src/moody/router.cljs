@@ -5,11 +5,10 @@
    [re-frame.core :as rf]))
 
 (def routes ["/" {"" :home
-                  "hoge" {"" :hoge}
                   "cards/" :cards
                   "settings/" :settings
-                  "conversion/" {"" :conversions
-                                 [:tool-type] :conversion}}])
+                  "conversions/" {"" :conversions
+                                  [:input-type "/" :output-type] :conversion}}])
 
 (def history
   (let [dispatch #(rf/dispatch [:route-changed %]) ; NOTE: dispatch-sync?

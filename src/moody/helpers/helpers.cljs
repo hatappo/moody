@@ -6,9 +6,6 @@
    [edamame.core :refer [parse-string]]
    [sql-formatter :as sql-formatter]))
 
-(defn nil->empty [s]
-  (if s s ""))
-
 (defn pprint-str
   [s]
   (with-out-str (pprint s)))

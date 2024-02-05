@@ -17,17 +17,25 @@
                                   strip-newline-and-tab]]
    [taoensso.timbre :as timbre]))
 
-(defn- convert-jsx-to-html
-  [jsx _options]
-  (->> jsx
-       strip-newline-and-tab
-       parse-fragment
-       (map as-hickory)
-       (prewalk (fn [node] (if (map? node) (rename-jsx-specific-attrs-to-html-attrs node) node)))
-       (map hickory-to-html)
-       (str/join "")))
+(def html-pretty-print-options
+  #js {:indent_size 2 :end_with_newline true :preserve_newlines false :wrap_attributes "force-expand-multiline" :wrap_attributes_min_attrs 2})
 
-(defn- convert-html-to-hiccup
+(defn html->noop [html {:keys [pretty?]}] (if-not pretty? html (.html js-beautify html html-pretty-print-options)))
+
+(defn jsx->noop [& args] (apply html->noop args))
+
+(defn json->noop [json {:keys [pretty?]}] (if-not pretty? json (.stringify js/JSON (.parse js/JSON json) nil "  ")))
+
+(defn edn->noop [edn {:keys [pretty?]}] (if-not pretty? edn (pprint-str (parse-string edn))))
+
+(defn hiccup->noop [& args] (apply edn->noop args))
+
+(def sql-pretty-print-options
+  #js {:keywordCase "upper" :dataTypeCase "upper" :functionCase "upper" :newlineBeforeSemicolon true})
+
+(defn sql->noop [sql {:keys [pretty?]}] (if-not pretty? sql (sql-formatter/format sql sql-pretty-print-options)))
+
+(defn html->hiccup
   [html {:keys [pretty?]}]
   (if-not (html? html)
     "parse error"
@@ -38,116 +46,180 @@
          (map (if pretty? pprint-str pr-str))
          (str/join ""))))
 
-(defn- convert-jsx-to-hiccup
-  [jsx options]
-  (if-not (html? jsx)
-    "parse error"
-    (-> jsx
-        (convert-jsx-to-html options)
-        (convert-html-to-hiccup options))))
+(defn jsx->html
+  [jsx _]
+  (->> jsx
+       strip-newline-and-tab
+       parse-fragment
+       (map as-hickory)
+       (prewalk (fn [node] (if (map? node) (rename-jsx-specific-attrs-to-html-attrs node) node)))
+       (map hickory-to-html)
+       (str/join "")))
 
-(defn- convert-json-to-edn
+(defn jsx->hiccup
+  [jsx options]
+  (-> jsx
+      (jsx->html (merge options {:input-type :jsx :output-type :html}))
+      (html->hiccup (merge options {:input-type :html :output-type :hiccup}))))
+
+(defn json->edn
   [json {:keys [pretty?]}]
   (if-not (json? json)
     "parse error"
     (-> json
         js/JSON.parse
-        (js->clj :keywordize-keys true)
+        (js->clj :keywordize-keys false #_true) ; TODO:
         ((if pretty? pprint-str pr-str)))))
 
-(defn- convert-with-noop
-  [text {:keys [pretty?]}]
-  (if (= 0 (count (str/trim text)))
-    ""
-    (let [data-format (determine-data-format text)]
-      (timbre/info {:determined-data-format data-format})
-      (case data-format
-        :html (str "<!-- As html code -->\n"
-                   (.html js-beautify text #js {:indent_size 2 :end_with_newline true :preserve_newlines false :wrap_attributes "force-expand-multiline" :wrap_attributes_min_attrs 2}))
-        :json (str "// As json code\n" (.stringify js/JSON (.parse js/JSON text) nil (when pretty? "  ")))
-        :yaml "TODO: not implemented"
-        :toml "TODO: not implemented"
-        :xml "TODO: not implemented"
-        :kdl "TODO: not implemented"
-        :clj (str "; As clojure code\n" ((if pretty? pprint-str println-str) (parse-string text)))
-        :sql (str "-- As sql query\n" (sql-formatter/format text #js {:keywordCase "upper" :dataTypeCase "upper" :functionCase "upper" :newlineBeforeSemicolon true}))
-        :unknown (str "\nunknown data-format.\n\n" text)
-        (str "error: unexpected data-format: " type)))))
+(defn auto->noop
+  [& args]
+  (let [data-format (determine-data-format (first args))]
+    (timbre/info {:fn :auto->noop :determined-data-format data-format :args args})
+    (case data-format
+      :html (str "<!-- As html code -->\n" (apply html->noop args))
+      :json (str "// As json code\n" (apply json->noop args))
+      :yaml "TODO: not implemented"
+      :toml "TODO: not implemented"
+      :xml "TODO: not implemented"
+      :kdl "TODO: not implemented"
+      :pkl "TODO: not implemented"
+      :clj (str "; As clojure code\n" (apply edn->noop args))
+      :sql (str "-- As sql query\n" (apply sql->noop args))
+      :unknown (str "\nunknown data-format.")
+      (str "error: unexpected data-format: " type))))
 
-(declare convert)
+(declare notations-by-notation-type)
 
-(declare tools-by-tool-type)
+(declare notations)
 
-(defn- convert-anything-to-something
+(defn- roulette->noop
   [text options]
-  (let [tool-type (-> tools-by-tool-type (dissoc :roulette) keys rand-nth)]
-    (timbre/info {:randomly-selected-tool-type tool-type})
-    (convert text options tool-type)))
+  (let [notations (filter (fn [{:keys [convert-fns notation-type]}]
+                            (and (pos? (count convert-fns))
+                                 (not= notation-type :roulette)))
+                          notations)
+        {:keys [convert-fns] :as notation} (rand-nth notations)
+        convert-fn-name (rand-nth (keys convert-fns))]
+    (timbre/info {:notation notation :convert-fn convert-fn-name})
+    ((convert-fn-name convert-fns) text options)))
 
 (defn convert
-  [text options tool-type]
+  [text {:keys [input-type output-type] :as options}]
   (when-not (str/blank? text)
-    (let [{:keys [convert-fn]} (get tools-by-tool-type (keyword tool-type) #(str "error: unexpected tool-type: " tool-type))]
+    (let [{:keys [convert-fns]} (notations-by-notation-type (keyword input-type))
+          convert-fn (convert-fns (keyword output-type))]
       (convert-fn text options))))
 
-(defrecord Tool
-  [tool-type     ; used in url path, as unique identical name
-   tool-category ; used in url path
-   tool-tags     ; used to grouping tools in `sidebar`
-   icon
-   icon-html
-   title         ; used as card title in `all-tools` page
-   label         ; used as dropdown text in `conversion` page
-   desc
-   convert-fn
-   relevant-words-text])
+(def notations
+  [{:notation-type :noop
+    :label " - "
+    :editor-lang "plaintext"
+    :convert-fns {}}
+   {:notation-type :html
+    :label "HTML"
+    :editor-lang "html"
+    :convert-fns {:noop html->noop
+                  :hiccup html->hiccup}}
+   {:notation-type :jsx
+    :label "JSX"
+    :editor-lang "html"
+    :convert-fns {:noop jsx->noop
+                  :hiccup jsx->hiccup}}
+   {:notation-type :hiccup
+    :label "Hiccup (Clojure)"
+    :editor-lang "clojure"
+    :convert-fns {:noop hiccup->noop}}
+   {:notation-type :edn
+    :label "EDN (Clojure)"
+    :editor-lang "clojure"
+    :convert-fns {:noop edn->noop}}
+   {:notation-type :json
+    :label "JSON"
+    :editor-lang "json"
+    :convert-fns {:noop json->noop
+                  :edn json->edn}}
+   {:notation-type :yaml
+    :label "YAML"
+    :editor-lang "yaml"
+    :convert-fns {}}
+   {:notation-type :toml
+    :label "TOML"
+    :editor-lang "plaintext"
+    :convert-fns {}}
+   {:notation-type :xml
+    :label "XML"
+    :editor-lang "xml"
+    :convert-fns {}}
+   {:notation-type :kdl
+    :label "KDL"
+    :editor-lang "plaintext"
+    :convert-fns {}}
+   {:notation-type :pkl
+    :label "Pkl"
+    :editor-lang "plaintext"
+    :convert-fns {}}
+   {:notation-type :sql
+    :label "SQL"
+    :editor-lang "sql"
+    :convert-fns {:noop sql->noop}}
+   {:notation-type :auto
+    :label "Auto"
+    :editor-lang "plaintext"
+    :convert-fns {:noop auto->noop}}
+   {:notation-type :roulette
+    :label "Roulette"
+    :editor-lang "plaintext"
+    :convert-fns {:noop roulette->noop}}])
+
+(def notations-by-notation-type
+  (zipmap (map :notation-type notations) notations))
 
 (def ^{:private true} tools-raw
   [{:tool-type :html2hiccup
-    :tool-category :conversion
+    :input-type :html
+    :output-type :hiccup
     :tool-tags #{:clojure :html :hiccup}
     :icon icons-ti/TiHtml5
     :icon-html "&lt;html&gt; <br/> ↓ <br/> [:hiccup]"
     :title "HTML - Hiccup"
     :label "HTML -> Hiccup (Clojure)"
-    :desc "Convert HTML and Hiccup to each other"
-    :convert-fn convert-html-to-hiccup}
+    :desc "Convert HTML and Hiccup to each other"}
    {:tool-type :jsx2hiccup
-    :tool-category :conversion
+    :input-type :jsx
+    :output-type :hiccup
     :tool-tags #{:clojure :jsx :hiccup}
     :icon icons-bs/BsFiletypeJsx
     :icon-html "&lt;jsx&gt; <br/> ↓ <br/> [:hiccup]"
     :title "JSX - Hiccup"
     :label "JSX -> Hiccup (Clojure)"
-    :desc "Convert JSX and Hiccup to each other"
-    :convert-fn convert-jsx-to-hiccup}
+    :desc "Convert JSX and Hiccup to each other"}
    {:tool-type :json2edn
-    :tool-category :conversion
+    :input-type :json
+    :output-type :edn
     :tool-tags #{:clojure :json :edn}
     :icon icons-vsc/VscJson
     :icon-html "{\"json\": []} <br/> ↓ <br/> {:edn []}"
     :title "JSON - EDN"
     :label "JSON -> EDN (Clojure)"
-    :desc "Convert JSON and EDN to each other"
-    :convert-fn convert-json-to-edn}
-   {:tool-type :noop
-    :tool-category :conversion
+    :desc "Convert JSON and EDN to each other"}
+   {:tool-type :auto
+    :input-type :auto
+    :output-type :noop
     :tool-tags #{:others}
     :icon icons-bs/BsFiletypeRaw
     :icon-html ".... <br/> ↓ <br/> ...."
-    :title "Noop"
-    :label "Noop"
-    :desc "It's useful to just prettify (format) code. The data format is automatically judged"
-    :convert-fn convert-with-noop}
+    :title "Auto"
+    :label "Auto"
+    :desc "It's useful to just prettify (format) code. The data format is automatically judged"}
    {:tool-type :roulette
-    :tool-category :conversion
+    :input-type :roulette
+    :output-type :noop
     :tool-tags #{:others}
     :icon icons-gi/GiCardRandom
     :icon-html "??? <br/> ↓ <br/> ???"
     :title "Roulette"
     :label "Roulette"
-    :desc ""
-    :convert-fn convert-anything-to-something}])
+    :desc ""}])
 
 (defn assoc-relevant-words-text
   [tools-raw]
@@ -158,12 +230,6 @@
        tools-raw))
 
 (def tools (assoc-relevant-words-text tools-raw))
-
-(def tools-by-tool-type
-  (zipmap (map :tool-type tools) tools))
-
-(def conversion-tools
-  (filter #(= :conversion (:tool-category %)) tools))
 
 (def clojure-tools
   (filter #(:clojure (:tool-tags %)) tools))

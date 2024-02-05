@@ -4,7 +4,10 @@
    [re-frame.core :as rf]))
 
 (def initial-app-db
-  {:nav {:active-page nil}
+  {:nav {:active-nav nil
+         :active-page nil
+         :input-type nil
+         :output-type nil}
    :editor {:theme "vs-dark"
             :word-wrap true
             :whitespace-option "all"}

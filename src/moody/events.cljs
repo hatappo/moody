@@ -2,7 +2,7 @@
   (:require
    [day8.re-frame.tracing-stubs :refer [fn-traced]]
    [moody.tools.tools :refer [convert]]
-   [re-frame.core :refer [reg-event-db]]
+   [re-frame.core :refer [reg-event-db reg-event-fx]]
    [taoensso.timbre :as timbre]))
 
 (reg-event-db
@@ -13,14 +13,21 @@
 
 (reg-event-db
  :update-input-text
- (fn-traced [db [_ input-text options]]
-            (let [{:keys [tool-type] :as nav} (-> db :nav)]
-              (timbre/trace {:event :convert :input-text input-text})
-              (timbre/info {:event :convert :nav nav :options options :tool-type tool-type})
-              (let [output-text (convert input-text options tool-type)]
+ (fn-traced [db [event input-text options]]
+            (let [{:keys [input-type output-type] :as nav} (-> db :nav)]
+              (timbre/trace {:event event :input-text input-text})
+              (timbre/info {:event event :nav nav :options options})
+              (let [output-text (convert input-text (merge options {:input-type input-type :output-type output-type}))]
                 (-> db
                     (assoc-in [:conversion :input-text] input-text)
                     (assoc-in [:conversion :output-text] output-text))))))
+
+(reg-event-fx
+ :navigate-to-conversion-page
+ (fn-traced [{db :db} [_ {:keys [route-params]}]]
+            (let [{:keys [input-type output-type]} route-params]
+              {:db db
+               :navigate-to {:path (str "/conversions/" (name input-type) "/" (name output-type))}})))
 
 (reg-event-db
  :set-editor-theme
