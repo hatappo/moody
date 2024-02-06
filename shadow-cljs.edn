@@ -19,6 +19,7 @@
                 ;; [metosin/malli "0.14.0"]
                 [org.clj-commons/hickory "0.7.4"]
                 [org.slf4j/slf4j-simple "2.0.11"]
+                [testdouble/clojurescript.csv "0.8.0"]
                 [tupelo "23.07.04"]
                 [reagent "1.2.0"]
                 [re-frame "1.4.0"]]

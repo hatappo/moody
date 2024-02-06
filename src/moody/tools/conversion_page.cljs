@@ -1,8 +1,10 @@
 (ns moody.tools.conversion-page
   (:require
    ["@monaco-editor/react" :refer [Editor]]
+   ["react-icons/go" :as icons-go]
    ["react-icons/lia" :as icons-lia]
    ["react-icons/lu" :as icons-lu]
+   [clojure.string :as str]
    [moody.tools.editor :refer [themes word-wrap-val]]
    [moody.tools.tools :refer [notations notations-by-notation-type]]
    [re-frame.core :as rf]
@@ -47,7 +49,8 @@
                                         input-notation (notations-by-notation-type input-type)]
                                     (.setModelLanguage (.-editor ^js @input-monaco-ratom) (.getModel ^js @input-editor-ratom) (:editor-lang input-notation))
                                     (.setModelLanguage (.-editor ^js @output-monaco-ratom) (.getModel ^js @output-editor-ratom) (:editor-lang input-notation))
-                                    (navigate-to-conversion-page input-type :noop)))}
+                                    (navigate-to-conversion-page input-type (first (keys (:convert-fns input-notation))))
+                                    (when (str/blank? input-text) (update-input-text (:example input-notation)))))}
             (->> notations
                  (filter (fn [{:keys [convert-fns]}] (pos? (count convert-fns))))
                  (map (fn [{:keys [notation-type label]}] ^{:key notation-type} [:option {:value notation-type} label])))]
@@ -63,7 +66,11 @@
             (let [{:keys [convert-fns]} (notations-by-notation-type (keyword input-type))]
               (->> notations
                    (filter (fn [{:keys [notation-type]}] (notation-type convert-fns)))
-                   (map (fn [{:keys [notation-type label]}] ^{:key notation-type} [:option {:value notation-type} label]))))]]]
+                   (map (fn [{:keys [notation-type label]}] ^{:key notation-type} [:option {:value notation-type} label]))))]
+           [:span {:class "tooltip tooltip-top", :data-tooltip "Swap 'from' and  'to'"}
+            [:button {:class "btn btn-ghost"
+                      :on-click #()}
+             [:> icons-go/GoArrowSwitch]]]]]
 
          [:section {:class "grid grid-flow-col justify-stretch gap-4 "}
           [:div {:class "max-w-full"}
@@ -91,8 +98,7 @@
                                     (.setTheme (.-editor ^js monaco) editor-theme)
                                     (.setModelLanguage (.-editor ^js monaco) (.getModel ^js editor) (:editor-lang input-notation))
                                     (reset! input-editor-ratom editor)
-                                    (reset! input-monaco-ratom monaco))
-                        #_ #_:defaultLanguage "html"}]]]
+                                    (reset! input-monaco-ratom monaco))}]]]
           [:div {:class "max-w-full"}
            [:div {:class "flex items-center my-2"}
             [:div {:class "flex gap-2 w-full"}
@@ -124,8 +130,7 @@
                         :on-mount (fn [editor, monaco]
                                     (.setModelLanguage (.-editor ^js monaco) (.getModel ^js editor) (:editor-lang output-notation))
                                     (reset! output-editor-ratom editor)
-                                    (reset! output-monaco-ratom monaco))
-                        #_ #_:defaultLanguage "clojure"}]]]]
+                                    (reset! output-monaco-ratom monaco))}]]]]
          [:section
           [:select {:class "select select-ghost-primary"
                     :value editor-theme

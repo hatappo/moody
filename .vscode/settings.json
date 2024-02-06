@@ -44,6 +44,8 @@
     "seafoam",
     "tailwindcss",
     "taoensso",
+    "testdouble",
+    "vals",
     "zipmap"
   ]
 }

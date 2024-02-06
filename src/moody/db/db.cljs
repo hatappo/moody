@@ -11,8 +11,8 @@
    :editor {:theme "vs-dark"
             :word-wrap true
             :whitespace-option "all"}
-   :conversion {:input-text "<a href=\"/foo/bar#\">hello</a>"
-                :output-text "[:a {:href \"/foo/bar#\"} \"hello\"]"}})
+   :conversion {:input-text nil
+                :output-text nil}})
 
 (rf/reg-event-db
  :initialize-db
