@@ -112,19 +112,21 @@
 
 (defn uri->plain [encoded-text] (js/decodeURI encoded-text))
 
-(defn plain->escaped-html
+(defn html->escaped-html-hex
   [plain-text]
-  (str/escape plain-text {\& "&amp;" \' "&#x27;" \` "&#x60;" \" "&quot;" \< "&lt;" \> "&gt;"}))
+  (str/escape plain-text {\& "&#x26;" \' "&#x27;" \" "&#x22;" \< "&#x3C;" \> "&#x3E;"}))
 
-(defn escaped-html->plain
+(defn html->escaped-html [plain-text] (html->escaped-html-hex plain-text))
+
+(defn escaped-html->html
   [escaped-text]
   (-> escaped-text
-      (str/replace "&amp;" "&")
-      (str/replace "&#x27;" "'")
-      (str/replace "&#x60;" "`")
-      (str/replace "&quot;" "\"")
-      (str/replace "&lt;" "<")
-      (str/replace "&gt;" ">")))
+      ;; hexadecimal ref | decimal ref | character ref
+      (str/replace #"(&#x26;|&#38;|&amp;)" "&")
+      (str/replace #"(&#x27;|&#39;|&apos;)" "'")
+      (str/replace #"(&#x22;|&#34;|&quot;)" "\"")
+      (str/replace #"(&#x3C;|&#60;|&lt;)" "<")
+      (str/replace #"(&#x3E;|&#62;|&gt;)" ">")))
 
 (defn auto->noop
   [& args]
