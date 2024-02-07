@@ -67,10 +67,13 @@
               (->> notations
                    (filter (fn [{:keys [notation-type]}] (notation-type convert-fns)))
                    (map (fn [{:keys [notation-type label]}] ^{:key notation-type} [:option {:value notation-type} label]))))]
-           [:span {:class "tooltip tooltip-top", :data-tooltip "Swap 'from' and  'to'"}
-            [:button {:class "btn btn-ghost"
-                      :on-click #()}
-             [:> icons-go/GoArrowSwitch]]]]]
+           (let [output-notation (output-type notations-by-notation-type)]
+             (when (get-in output-notation [:convert-fns input-type])
+               [:span {:class "tooltip tooltip-top", :data-tooltip "Swap 'from' and 'to'"}
+                [:a {:href (router/path-for :conversion :input-type output-type :output-type input-type)}
+                 [:button {:class "btn btn-ghost btn-sm"
+                           :on-click #()}
+                  [:> icons-go/GoArrowSwitch {:size "1.0em"}]]]]))]]
 
          [:section {:class "grid grid-flow-col justify-stretch gap-4 "}
           [:div {:class "max-w-full"}
