@@ -15,8 +15,8 @@
       (let [editor-theme @(rf/subscribe [:editor-theme])
             editor-word-wrap @(rf/subscribe [:editor-word-wrap])
             editor-whitespace-option @(rf/subscribe [:editor-whitespace-option])]
-        [:article {:class "flex flex-col gap-4"}
-         [:h2 {:class "text-xl my-8"}
+        [:article {:class "flex flex-col gap-2"}
+         [:h2 {:class "text-xl my-4"}
           "Settings"]
          [:section {:class "flex flex-col gap-4"}
           [:h3
