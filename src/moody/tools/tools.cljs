@@ -21,6 +21,7 @@
                                   rename-jsx-specific-attrs-to-html-attrs
                                   strip-newline-and-tab]]
    [moody.tools.encoding :refer [base64-decode base64-encode]]
+   [moody.util-str :refer [pad]]
    [taoensso.timbre :as timbre]
    [testdouble.cljs.csv :as csv]))
 
@@ -73,7 +74,7 @@
       (jsx->html (merge options {:input-type :jsx :output-type :html}))
       (html->hiccup (merge options {:input-type :html :output-type :hiccup}))))
 
-(defn json->edn
+(defn json->edn  ; TODO: embrace trailing comma
   [json {:keys [pretty?]}]
   (if-not (json? json)
     "parse error"
@@ -94,8 +95,8 @@
       "Min columns" (->> c
                          ((partial map count))
                          (apply min))
-      "Are headers unique" (= (count headers)
-                              (count (set headers)))
+      "Are headers unique?" (= (count headers)
+                               (count (set headers)))
       "Duplicated headers" (->> headers
                                 ((partial group-by identity))
                                 seq
@@ -127,6 +128,18 @@
       (str/replace #"(&#x22;|&#34;|&quot;)" "\"")
       (str/replace #"(&#x3C;|&#60;|&lt;)" "<")
       (str/replace #"(&#x3E;|&#62;|&gt;)" ">")))
+
+(defn jwt->json [jwt]
+  (let [[header payload _sign] (str/split jwt #"\.")
+        header-json (-> header base64-decode)
+        payload-json (-> payload base64-decode)]
+    (if-not (and (json? header-json) (json? payload-json))
+      "parse error"
+      (str "// header\n"
+           (-> header-json js/JSON.parse (js/JSON.stringify nil "  "))
+           "\n\n"
+           "// payload\n"
+           (-> payload-json js/JSON.parse (js/JSON.stringify nil "  "))))))
 
 (defn auto->noop
   [& args]
@@ -165,7 +178,42 @@
   (when-not (str/blank? text)
     (let [{:keys [convert-fns]} (notations-by-notation-type (keyword input-type))
           convert-fn (convert-fns (keyword output-type))]
-      (convert-fn text options))))
+      (convert-fn (str/trim text) options))))
+
+(defn ipv4-binary->ipv4-decimal-
+  [text]
+  (if (not (re-matches #"^[ .01]*$" text))
+    "parse error: there are invalid characters"
+    (let [octets (if (str/includes? text ".")
+                   (str/split text ".")
+                   (re-seq #".{1,8}" text))]
+      (if (not= (count octets) 4) (str "parse error: there must be 4 parts, but " (count octets))
+          (->> octets
+               (map #(js/Number.parseInt % 2))
+               (str/join "."))))))
+
+(defn ipv4-binary->ipv4-decimal
+  [multiline-text]
+  (->> (str/split multiline-text "\n")
+       (map ipv4-binary->ipv4-decimal-)
+       (str/join "\n")))
+
+(defn ipv4-decimal->ipv4-binary-
+  [text]
+  (let [text (first (str/split text "/"))
+        octets (map js/Number.parseInt (str/split text "."))]
+    (if (or (some NaN? octets)
+            (not= 4 (count octets)))
+      (str "parse error: there must be 4 parts, but " (count octets))
+      (->> octets
+           (map #(-> % (.toString 2) (pad 8 "0")))
+           (str/join ".")))))
+
+(defn ipv4-decimal->ipv4-binary
+  [multiline-text]
+  (->> (str/split multiline-text "\n")
+       (map ipv4-decimal->ipv4-binary-)
+       (str/join "\n")))
 
 (def notations
   [{:notation-type :noop
@@ -195,7 +243,8 @@
     :tags #{:html}
     :example "<a href=\"/foo/bar#\">hello</a>"
     :convert-fns {:noop html->noop
-                  :hiccup html->hiccup}}
+                  :hiccup html->hiccup
+                  :escaped-html html->escaped-html}}
    {:notation-type :jsx
     :title "JSX"
     :label "JSX"
@@ -306,8 +355,7 @@
     :tags #{}
     :example "a b c"
     :convert-fns {:base64 plain->base64
-                  :uri plain->uri
-                  :escaped-html plain->escaped-html}}
+                  :uri plain->uri}}
    {:notation-type :base64
     :title "Base 64"
     :label "Base64"
@@ -326,6 +374,15 @@
     :tags #{:encoding}
     :example "https://example.com/index.html?icon=%F0%9F%98%8B"
     :convert-fns {:plain uri->plain}}
+   {:notation-type :jwt
+    :title "JWT"
+    :label "JWT"
+    :editor-lang "plaintext"
+    :icon icons-si/SiJsonwebtokens
+    :icon-html "jwt"
+    :tags #{:encoding}
+    :example "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InZUNzJVR1RuY1UwMWVGa1JPcHBzMiJ9.eyJpc3MiOiJodHRwczovL2Rldi1qdXgzZnRsZ2ZmYzZuNjZ0LmpwLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NDYyZmI3NDE0NDQ1Y2VmMjZhOTdmYTkiLCJhdWQiOlsiaHR0cHM6Ly9kZXYtanV4M2Z0bGdmZmM2bjY2dC5qcC5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZGV2LWp1eDNmdGxnZmZjNm42NnQuanAuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTY4NDIxMDgyNCwiZXhwIjoxNjg0Mjk3MjI0LCJhenAiOiJNN1B2N1lKaXZDZWVDN3VLVm9TMDFPNkdtcXA5SzMwUiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgcmVhZDpjdXJyZW50X3VzZXIgdXBkYXRlOmN1cnJlbnRfdXNlcl9tZXRhZGF0YSBkZWxldGU6Y3VycmVudF91c2VyX21ldGFkYXRhIGNyZWF0ZTpjdXJyZW50X3VzZXJfbWV0YWRhdGEgY3JlYXRlOmN1cnJlbnRfdXNlcl9kZXZpY2VfY3JlZGVudGlhbHMgZGVsZXRlOmN1cnJlbnRfdXNlcl9kZXZpY2VfY3JlZGVudGlhbHMgdXBkYXRlOmN1cnJlbnRfdXNlcl9pZGVudGl0aWVzIiwiZ3R5IjoicGFzc3dvcmQifQ.SN7lHn8gW1zO1mz-yRyhTYRhQw4iAsVVctRs-qnCvq6vIW3PGjYBQdz-NgxdVI5Ef6eGyzn4FuMVyVOeOWh2LpfdY7JP_1YObxGQ-fDWTGnfLdH2A5XmLIp6K9Fv_-POCkn9GR4LHA9D04lx5HwEw5CMhmZeUE1hyzvmViPmN2vnuZrbU791AV1rUsaPXEdCpaI8igDhpGwOz6A89uAL1dWRUs_QguwuSLw6l8cE_mbXjre_NX0j38hY0C7Zx8KDoc7NoEyfJ6tAiF_nGCOF-nqbx6UiYxLGS1-Qcouw4VheOYH2gK2YNBi8W8Cn7WWzgALCTOw6WSa08OQ3qCJdDw"
+    :convert-fns {:json jwt->json}}
    {:notation-type :escaped-html
     :title "Escaped HTML"
     :label "Escaped HTML"
@@ -334,7 +391,25 @@
     :icon-html "&amp;lt;a&amp;gt;" ; <= (escape (escape "<a>"))
     :tags #{:encoding :html}
     :example "&#x3C;script&#x3E;alert(&#x22;123&#x22;)&#x3C;/script&#x3E;"
-    :convert-fns {:plain escaped-html->plain}}
+    :convert-fns {:html escaped-html->html}}
+   {:notation-type :ipv4-binary
+    :title "IPv4(binary)"
+    :label "IPv4(binary)"
+    :editor-lang "plaintext"
+    :icon icons-pi/PiShareNetworkDuotone
+    :icon-html "11000000.."
+    :tags #{:network :radix}
+    :example "11000000.10101000.00000001.01100100\n11000000.10101000.00000010.01100100\n11000000.10101000.00000011.01100100\n"
+    :convert-fns {:ipv4-decimal ipv4-binary->ipv4-decimal}}
+   {:notation-type :ipv4-decimal
+    :title "IPv4(decimal)"
+    :label "IPv4(decimal)"
+    :editor-lang "plaintext"
+    :icon icons-pi/PiShareNetworkDuotone
+    :icon-html "192.168.1.100"
+    :tags #{:network :radix}
+    :example "192.168.1.100\n192.168.2.100\n192.168.3.100\n"
+    :convert-fns {:ipv4-binary ipv4-decimal->ipv4-binary}}
    {:notation-type :auto
     :title "Auto"
     :label "Auto"
@@ -371,13 +446,14 @@
                             out-title :title
                             out-label :label
                             out-tags :tags
+                            out-icon :icon
                             out-icon-html :icon-html}
                            (output-notation-type notations-by-notation-type)]
                        {:tool-type (keyword (str (name in-type) "->" (name out-type)))
                         :input-type in-type
                         :output-type out-type
                         :title (cond
-                                 (:encoding out-tags) out-label
+                                 (:encoding out-tags) (str "Encode " out-label)
                                  (:encoding in-tags) (str "Decode " in-label)
                                  out-title (str in-title " -> " out-title)
                                  :else in-title)
@@ -385,7 +461,7 @@
                         :input-tags in-tags
                         :output-tags out-tags
                         :tool-tags (union in-tags out-tags)
-                        :icon in-icon
+                        :icon (if (:encoding out-tags) out-icon in-icon)
                         :icon-html (if out-icon-html (str in-icon-html " <br/> ↓ <br/> "  out-icon-html) in-icon-html)
                         :desc (cond
                                 (= in-type :roulette) ""
@@ -412,10 +488,19 @@
   (filter #(and (:clojure (:tool-tags %)) (not= (:output-type %) :noop)) tools))
 
 (def html-tools
-  (filter #(and (:html (:tool-tags %)) (not= (:output-type %) :noop)) tools))
+  (->> tools
+       (filter #(and (:html (:tool-tags %)) (not= (:output-type %) :noop)))
+       (sort-by :title)
+       reverse))
 
 (def encoding-tools
-  (filter #(and (:encoding (:tool-tags %)) (not= (:output-type %) :noop)) tools))
+  (->> tools
+       (filter #(and (:encoding (:tool-tags %)) (not= (:output-type %) :noop)))
+       (sort-by :title)
+       reverse))
 
 (def table-tools
   (filter #(and (:table (:tool-tags %)) (not= (:output-type %) :noop)) tools))
+
+(def radix-tools
+  (filter #(and (:radix (:tool-tags %)) (not= (:output-type %) :noop)) tools))
