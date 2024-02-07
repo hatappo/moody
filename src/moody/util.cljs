@@ -1,18 +1,9 @@
-(ns moody.helpers.helpers
+(ns moody.util
   (:require
-   [cljs.pprint :refer [pprint]]
    [clojure.set :refer [rename-keys]]
    [clojure.string :as str]
    [edamame.core :refer [parse-string]]
    [sql-formatter :as sql-formatter]))
-
-(defn pprint-str
-  [s]
-  (with-out-str (pprint s)))
-
-(defn strip-newline-and-tab
-  [s]
-  (str/replace s #"\r\n|\n|\r|\t" ""))
 
 (defn rename-jsx-specific-attrs-to-html-attrs
   [m]

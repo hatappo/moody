@@ -8,6 +8,7 @@
                   "cards/" :cards
                   "settings/" :settings
                   "conversions/" {"" :conversions
+                                  "radix/" :radix
                                   [:input-type "/" :output-type] :conversion}
                   "about/" :about}])
 

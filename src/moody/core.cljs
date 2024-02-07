@@ -4,8 +4,6 @@
    [moody.cards.cards-page :refer [cards-page]]
    [moody.config.env :refer [config]]
    [moody.db.db]
-   [moody.errors.errors-events]
-   [moody.errors.errors-subs]
    [moody.events]
    [moody.nav.nav :refer [nav]]
    [moody.nav.nav-events]
@@ -14,6 +12,7 @@
    [moody.settings.settings-page :refer [settings-page]]
    [moody.subs]
    [moody.tools.conversion-page :refer [conversion-page]]
+   [moody.tools.radix-page :refer [radix-page]]
    [re-frame.core :as rf]
    [reagent.dom.client :as rdc]
    [taoensso.timbre :as timbre]))
@@ -26,6 +25,7 @@
     :settings [settings-page]
     :conversions [conversion-page]
     :conversion [conversion-page]
+    :radix [radix-page]
     :about [about-page]
     [about-page]))
 

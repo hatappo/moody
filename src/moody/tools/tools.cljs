@@ -16,12 +16,11 @@
    [edamame.core :refer [parse-string]]
    [hickory.core :refer [as-hiccup as-hickory parse-fragment]]
    [hickory.render :refer [hickory-to-html]]
-   [moody.helpers.helpers :refer [determine-data-format html? json?
-                                  pprint-str
-                                  rename-jsx-specific-attrs-to-html-attrs
-                                  strip-newline-and-tab]]
+   [moody.router :as router]
    [moody.tools.encoding :refer [base64-decode base64-encode]]
-   [moody.util-str :refer [pad]]
+   [moody.util :refer [determine-data-format html? json?
+                       rename-jsx-specific-attrs-to-html-attrs]]
+   [moody.util-str :refer [pad pprint-str strip-newline-and-tab]]
    [taoensso.timbre :as timbre]
    [testdouble.cljs.csv :as csv]))
 
@@ -432,7 +431,17 @@
 (def notations-by-notation-type
   (zipmap (map :notation-type notations) notations))
 
-(def ^:private tools-raw
+(def other-conversions
+  [{:tool-type "radix"
+    :title "Radix"
+    :label "Radix"
+    :tool-tags #{:radix :hexadecimal :octan :binary}
+    :icon icons-tb/TbNumber16Small
+    :icon-html "ffff  <br/> ↓↑ <br/> 65,535"
+    :path (router/path-for :radix)
+    :desc "Converts between multiple radix representations."}])
+
+(def ^:private conversions
   (->> notations
        (map (fn [{in-type :notation-type
                   in-title :title
@@ -450,19 +459,18 @@
                             out-icon-html :icon-html}
                            (output-notation-type notations-by-notation-type)]
                        {:tool-type (keyword (str (name in-type) "->" (name out-type)))
-                        :input-type in-type
-                        :output-type out-type
+                        ;; :input-type in-type
+                        ;; :output-type out-type
                         :title (cond
                                  (:encoding out-tags) (str "Encode " out-label)
                                  (:encoding in-tags) (str "Decode " in-label)
                                  out-title (str in-title " -> " out-title)
                                  :else in-title)
                         :label (str in-title " -> " (if out-title out-title in-title))
-                        :input-tags in-tags
-                        :output-tags out-tags
                         :tool-tags (union in-tags out-tags)
                         :icon (if (:encoding out-tags) out-icon in-icon)
                         :icon-html (if out-icon-html (str in-icon-html " <br/> ↓ <br/> "  out-icon-html) in-icon-html)
+                        :path (router/path-for :conversion :input-type in-type :output-type out-type)
                         :desc (cond
                                 (= in-type :roulette) ""
                                 (= in-type :auto) "Automatically detected the data type and format it."
@@ -482,7 +490,8 @@
            (assoc tool :relevant-words-text (str/lower-case relevant-words-text))))
        tools-raw))
 
-(def tools (assoc-relevant-words-text tools-raw))
+(def tools
+  (assoc-relevant-words-text (concat other-conversions conversions)))
 
 (def clojure-tools
   (filter #(and (:clojure (:tool-tags %)) (not= (:output-type %) :noop)) tools))

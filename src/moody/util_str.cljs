@@ -1,4 +1,15 @@
-(ns moody.util-str)
+(ns moody.util-str
+  (:require
+   [cljs.pprint :refer [pprint]]
+   [clojure.string :as str]))
+
+(defn pprint-str
+  [s]
+  (with-out-str (pprint s)))
+
+(defn strip-newline-and-tab
+  [s]
+  (str/replace s #"\r\n|\n|\r|\t" ""))
 
 (defn slice
   [s begin end]

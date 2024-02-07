@@ -1,7 +1,6 @@
 (ns moody.nav.nav-menu-group
   (:require
-   [moody.components.icons :refer [menu-icon]]
-   [moody.router :as router]))
+   [moody.components.icons :refer [menu-icon]]))
 
 (defn nav-menu-group
   [id label tools icon]
@@ -15,8 +14,8 @@
       [:<> menu-icon]]
      [:div {:class "menu-item-collapse"}
       [:div {:class "min-h-0"}
-       (map (fn [{:keys [tool-type input-type output-type title]}]
+       (map (fn [{:keys [tool-type path title]}]
               ^{:key tool-type}
-              [:a {:href (router/path-for :conversion :input-type input-type :output-type output-type)}
+              [:a {:href path}
                [:label {:class "menu-item ml-6"} title]])
             tools)]]]))

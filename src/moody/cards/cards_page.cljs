@@ -2,7 +2,6 @@
   (:require
    ["react-icons/bs" :as icons-bs]
    [clojure.string :as str]
-   [moody.router :as router]
    [moody.tools.tools :as tools]
    [reagent.core :as r]
    [taoensso.timbre :as timbre]))
@@ -39,9 +38,9 @@
                (filter (fn [{:keys [relevant-words-text]}]
                          (str/includes? relevant-words-text (str/lower-case @search-word-ratom))))
                (map-indexed
-                (fn [_idx {:keys [tool-type input-type output-type tool-tags icon icon-html title desc]}]
+                (fn [_idx {:keys [tool-type path tool-tags icon icon-html title desc]}]
                   ^{:key tool-type}
-                  [:a {:href (router/path-for :conversion :input-type input-type :output-type output-type)}
+                  [:a {:href path}
                    [:div {:class "rounded-md bg-gray-3 h-80 w-44"}
                     [:div {:class "flex flex-col items-center gap-2 p-4"}
                      [:div {:class "flex items-center justify-center text-center bg-gray-5 rounded-md aspect-square w-24 p-2 m-4"}
