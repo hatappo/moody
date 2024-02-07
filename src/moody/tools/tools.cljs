@@ -333,7 +333,7 @@
     :label "CSV"
     :editor-lang "plaintext"
     :icon icons-bs/BsFiletypeCsv
-    :icon-html "foo,bar,baz"
+    :icon-html "foo,bar,csv"
     :tags #{:table}
     :example "\"ID\",\"First Name\",\"Family Name\",\"age\",\"ID\"\n\"1\",\"Taro\",\"Suzuki\",\"24\",\"A-1\"\n\"2\",\"John\",\"Yamada\",\"24\",\"B-2\"\n\"3\",\"Yu\",\"Ito\",\"24\",\"C-3\""
     :convert-fns {:analysis csv->analysis}}
@@ -388,7 +388,7 @@
     :label "Escaped HTML"
     :editor-lang "plaintext"
     :icon icons-bs/BsFiletypeHtml
-    :icon-html "&amp;lt;a&amp;gt;" ; <= (escape (escape "<a>"))
+    :icon-html "&amp;lt;html&amp;gt;" ; <= (escape (escape "<a>"))
     :tags #{:encoding :html}
     :example "&#x3C;script&#x3E;alert(&#x22;123&#x22;)&#x3C;/script&#x3E;"
     :convert-fns {:html escaped-html->html}}
