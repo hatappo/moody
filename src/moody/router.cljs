@@ -8,7 +8,8 @@
                   "cards/" :cards
                   "settings/" :settings
                   "conversions/" {"" :conversions
-                                  [:input-type "/" :output-type] :conversion}}])
+                                  [:input-type "/" :output-type] :conversion}
+                  "about/" :about}])
 
 (def history
   (let [dispatch #(rf/dispatch [:route-changed %]) ; NOTE: dispatch-sync?

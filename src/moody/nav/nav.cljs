@@ -60,6 +60,11 @@
                 [:> icons-vsc/VscGear {:size "1.5em"}]
                 [:span "Settings"]]]]
              [:li
+              [:a {:href (router/path-for :about)}
+               [:div {:class "menu-item"}
+                [:> icons-lu/LuStickyNote {:size "1.5em"}]
+                [:span "About"]]]]
+             [:li
               [:a {:href "https://github.com/hatappo/moody" :target "_blank"}
                [:div {:class "menu-item"}
                 [:> icons-vsc/VscGithub {:size "1.5em"}]

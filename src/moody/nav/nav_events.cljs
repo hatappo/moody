@@ -29,15 +29,11 @@
                          (assoc-in [:nav :input-type] (keyword input-type))
                          (assoc-in [:nav :output-type] (keyword output-type)))]
 
-              (if (= handler :cards)
-                (.addEventListener js/document "keydown" focus-search-input-on-keydown)
+              (if (#{:cards :home} handler)
+                (.addEventListener js/document "keydown" focus-search-input-on-keydown) ; TODO: cannot type `/` when focus is no the search input
                 (.removeEventListener js/document "keydown" focus-search-input-on-keydown))
 
               (case handler
-                :home {:db db}
-                :cards {:db db}
-                :settings {:db db}
-                :conversions {:db db}
                 :conversion (let [input-notation (input-type notations-by-notation-type)
                                   output-notation (output-type notations-by-notation-type)
                                   input-editor-lang (:editor-lang input-notation)
@@ -49,7 +45,8 @@
                                     [:dispatch [:update-input-text (cond
                                                                      (str/blank? input-text) (:example input-notation)
                                                                      (not= prev-input-type input-type) (:example input-notation)
-                                                                     :else input-text)]]]})))))
+                                                                     :else input-text)]]]})
+                {:db db}))))
 
 ;; (reg-event-db
 ;;  :set-active-nav

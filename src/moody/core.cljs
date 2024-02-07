@@ -1,12 +1,12 @@
 (ns moody.core
   (:require
+   [moody.about.about-page :refer [about-page]]
    [moody.cards.cards-page :refer [cards-page]]
    [moody.config.env :refer [config]]
    [moody.db.db]
    [moody.errors.errors-events]
    [moody.errors.errors-subs]
    [moody.events]
-   [moody.home.views.home-page :refer [home-page]]
    [moody.nav.nav :refer [nav]]
    [moody.nav.nav-events]
    [moody.nav.nav-subs]
@@ -21,12 +21,13 @@
 (defn pages
   [page-name]
   (case page-name
-    :home [home-page]
+    :home [cards-page]
     :cards [cards-page]
+    :settings [settings-page]
     :conversions [conversion-page]
     :conversion [conversion-page]
-    :settings [settings-page]
-    [home-page]))
+    :about [about-page]
+    [about-page]))
 
 (defn app
   []

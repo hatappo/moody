@@ -7,7 +7,7 @@
   [id label tools icon]
   (let [html-id (str "menu-" (name id))]
     [:li
-     [:input {:type "checkbox" :id html-id :class "menu-toggle"}]
+     [:input {:type "checkbox" :id html-id :class "menu-toggle" :default-checked false}]
      [:label {:class "menu-item justify-between" :for html-id}
       [:div {:class "flex gap-2"}
        [:> icon {:size "1.5em"}]
