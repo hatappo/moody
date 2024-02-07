@@ -63,4 +63,5 @@
               [:a {:href "https://github.com/hatappo/moody" :target "_blank"}
                [:div {:class "menu-item"}
                 [:> icons-vsc/VscGithub {:size "1.5em"}]
-                #_[:> icons-io5/IoOpenOutline {:size "1.5em"}]]]]]]]]]))))
+                "GitHub"
+                [:> icons-io5/IoOpenOutline {:size "1.0em"}]]]]]]]]]))))
