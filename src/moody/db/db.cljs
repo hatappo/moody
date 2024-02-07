@@ -8,9 +8,13 @@
          :active-page nil
          :input-type nil
          :output-type nil}
-   :editor {:theme "vs-dark"
-            :word-wrap true
-            :whitespace-option "all"}
+   :settings {:editor {:theme "vs-dark"
+                       :word-wrap true
+                       :whitespace-option "all"}}
+   :input-monaco-editor {:input-monaco nil
+                         :input-editor nil}
+   :output-monaco-editor {:output-monaco nil
+                          :output-editor nil}
    :conversion {:input-text nil
                 :output-text nil}})
 

@@ -4,8 +4,8 @@
    ["react-icons/go" :as icons-go]
    ["react-icons/lia" :as icons-lia]
    ["react-icons/lu" :as icons-lu]
-   [clojure.string :as str]
-   [moody.tools.editor :refer [themes word-wrap-val]]
+   [moody.router :as router]
+   [moody.tools.editor :refer [word-wrap-val]]
    [moody.tools.tools :refer [notations notations-by-notation-type]]
    [re-frame.core :as rf]
    [reagent.core :as r]))
@@ -14,18 +14,15 @@
   []
   (let [initial-options {:pretty? true}
         options-ratom (r/atom initial-options)
-        input-editor-ratom (r/atom nil)
-        input-monaco-ratom (r/atom nil)
-        output-editor-ratom (r/atom nil)
-        output-monaco-ratom (r/atom nil)
         navigate-to-conversion-page (fn [input-type output-type]
                                       (rf/dispatch [:navigate-to-conversion-page {:handler :conversion
                                                                                   :route-params {:input-type input-type
                                                                                                  :output-type output-type}}]))
-        set-editor-theme (fn [editor-theme]
-                           (rf/dispatch [:set-editor-theme editor-theme]))
-        update-input-text (fn [input-text]
-                            (rf/dispatch [:update-input-text input-text @options-ratom]))]
+        update-input-text (fn [input-text] (rf/dispatch [:update-input-text input-text @options-ratom]))
+        set-input-monaco-editor-instances (fn [input-editor input-monaco]
+                                            (rf/dispatch [:set-input-monaco-editor-instances input-editor input-monaco]))
+        set-output-monaco-editor-instances (fn [output-editor output-monaco]
+                                             (rf/dispatch [:set-output-monaco-editor-instances output-editor output-monaco]))]
     (fn []
       (let [editor-theme @(rf/subscribe [:editor-theme])
             editor-word-wrap @(rf/subscribe [:editor-word-wrap])
@@ -47,10 +44,7 @@
                      :on-change (fn [e]
                                   (let [input-type (keyword (.. e -target -value))
                                         input-notation (notations-by-notation-type input-type)]
-                                    (.setModelLanguage (.-editor ^js @input-monaco-ratom) (.getModel ^js @input-editor-ratom) (:editor-lang input-notation))
-                                    (.setModelLanguage (.-editor ^js @output-monaco-ratom) (.getModel ^js @output-editor-ratom) (:editor-lang input-notation))
-                                    (navigate-to-conversion-page input-type (first (keys (:convert-fns input-notation))))
-                                    (when (str/blank? input-text) (update-input-text (:example input-notation)))))}
+                                    (navigate-to-conversion-page input-type (first (keys (:convert-fns input-notation))))))}
             (->> notations
                  (filter (fn [{:keys [convert-fns]}] (pos? (count convert-fns))))
                  (map (fn [{:keys [notation-type label]}] ^{:key notation-type} [:option {:value notation-type} label])))]
@@ -58,10 +52,7 @@
            [:select {:class "select select-ghost-primary w-44"
                      :value output-type
                      :on-change (fn [e]
-                                  (let [output-type (keyword (.. e -target -value))
-                                        output-notation (notations-by-notation-type output-type)
-                                        editor-lang (if (= output-type :noop) (:editor-lang input-notation) (:editor-lang output-notation))]
-                                    (.setModelLanguage (.-editor ^js @output-monaco-ratom) (.getModel ^js @output-editor-ratom) editor-lang)
+                                  (let [output-type (keyword (.. e -target -value))]
                                     (navigate-to-conversion-page input-type output-type)))}
             (let [{:keys [convert-fns]} (notations-by-notation-type (keyword input-type))]
               (->> notations
@@ -97,11 +88,10 @@
                         #_#_:theme "vs-dark" ; なぜか効かないので on-mount で同様の設定を行っている
                         :value input-text
                         :on-change update-input-text
-                        :on-mount (fn [editor, monaco]
+                        :on-mount (fn [editor monaco]
                                     (.setTheme (.-editor ^js monaco) editor-theme)
                                     (.setModelLanguage (.-editor ^js monaco) (.getModel ^js editor) (:editor-lang input-notation))
-                                    (reset! input-editor-ratom editor)
-                                    (reset! input-monaco-ratom monaco))}]]]
+                                    (set-input-monaco-editor-instances editor monaco))}]]]
           [:div {:class "max-w-full"}
            [:div {:class "flex items-center my-2"}
             [:div {:class "flex gap-2 w-full"}
@@ -130,9 +120,8 @@
                                   :wordWrap (word-wrap-val editor-word-wrap)
                                   :read-only true}
                         :value (str output-text)
-                        :on-mount (fn [editor, monaco]
+                        :on-mount (fn [editor monaco]
                                     (.setModelLanguage (.-editor ^js monaco) (.getModel ^js editor) (:editor-lang output-notation))
-                                    (reset! output-editor-ratom editor)
-                                    (reset! output-monaco-ratom monaco))}]]]]
+                                    (set-output-monaco-editor-instances editor monaco))}]]]]
          [:section
           [:span]]]))))

@@ -32,14 +32,40 @@
 (reg-event-db
  :set-editor-theme
  (fn-traced [db [_ editor-theme]]
-            (assoc-in db [:editor :theme] editor-theme)))
+            (assoc-in db [:settings :editor :theme] editor-theme)))
 
 (reg-event-db
  :set-editor-word-wrap
  (fn-traced [db [_ word-wrap]]
-            (assoc-in db [:editor :word-wrap] word-wrap)))
+            (assoc-in db [:settings :editor :word-wrap] word-wrap)))
 
 (reg-event-db
  :set-editor-whitespace-option
  (fn-traced [db [_ whitespace-option]]
-            (assoc-in db [:editor :whitespace-option] whitespace-option)))
+            (assoc-in db [:settings :editor :whitespace-option] whitespace-option)))
+
+(reg-event-db
+ :set-input-editor-language
+ (fn-traced [db [_ lang]]
+            (let [{:keys [input-editor input-monaco]} (:input-monaco-editor db)]
+              (when (and input-editor input-monaco)
+                (when-let [model (.getModel ^js input-editor)]
+                  (.setModelLanguage (.-editor ^js input-monaco) model (name lang)))))))
+
+(reg-event-db
+ :set-output-editor-language
+ (fn-traced [db [_ lang]]
+            (let [{:keys [output-editor output-monaco]} (:output-monaco-editor db)]
+              (when (and output-editor output-monaco)
+                (when-let [model (.getModel ^js output-editor)]
+                  (.setModelLanguage (.-editor ^js output-monaco) model (name lang)))))))
+
+(reg-event-db
+ :set-input-monaco-editor-instances
+ (fn-traced [db [_ input-editor input-monaco]]
+            (assoc db :input-monaco-editor {:input-editor input-editor :input-monaco input-monaco})))
+
+(reg-event-db
+ :set-output-monaco-editor-instances
+ (fn-traced [db [_ output-editor output-monaco]]
+            (assoc db :output-monaco-editor {:output-editor output-editor :output-monaco output-monaco})))

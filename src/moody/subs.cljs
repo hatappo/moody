@@ -20,14 +20,14 @@
 (reg-sub
  :editor-theme
  (fn [db _]
-   (get-in db [:editor :theme])))
+   (get-in db [:settings :editor :theme])))
 
 (reg-sub
  :editor-word-wrap
  (fn [db _]
-   (get-in db [:editor :word-wrap])))
+   (get-in db [:settings :editor :word-wrap])))
 
 (reg-sub
  :editor-whitespace-option
  (fn [db _]
-   (get-in db [:editor :whitespace-option])))
+   (get-in db [:settings :editor :whitespace-option])))
