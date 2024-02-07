@@ -1,13 +1,14 @@
 (ns moody.nav.nav
   (:require
    ["react-icons/go" :as icons-go]
-   #_["react-icons/io5" :as icons-io5]
+   ["react-icons/io5" :as icons-io5]
    ["react-icons/lu" :as icons-lu]
    ["react-icons/si" :as icons-si]
+   ["react-icons/tb" :as icons-tb]
    ["react-icons/ti" :as icons-ti]
    ["react-icons/vsc" :as icons-vsc]
-   [moody.components.icons :refer [menu-icon]]
    [moody.config.env :as env]
+   [moody.nav.nav-menu-group :refer [nav-menu-group]]
    [moody.router :as router]
    [moody.tools.tools :as tools]
    [reagent.core :as r]))
@@ -41,66 +42,11 @@
                 [:div {:class "flex gap-2"}
                  [:> icons-vsc/VscHome {:size "1.5em"}]
                  [:span "All Tools"]]]]]
-             ;; HTML Tools
-             [:li
-              [:input {:type "checkbox" :id "menu-html" :class "menu-toggle"}]
-              [:label {:class "menu-item justify-between" :for "menu-html"}
-               [:div {:class "flex gap-2"}
-                [:> icons-ti/TiHtml5 {:size "1.5em"}]
-                [:span "HTML"]]
-               [:<> menu-icon]]
-              [:div {:class "menu-item-collapse"}
-               [:div {:class "min-h-0"}
-                (map (fn [{:keys [tool-type input-type output-type title]}]
-                       ^{:key tool-type}
-                       [:a {:href (router/path-for :conversion :input-type input-type :output-type output-type)}
-                        [:label {:class "menu-item ml-6"} title]])
-                     tools/html-tools)]]]
-             ;; Clojure Tools
-             [:li
-              [:input {:type "checkbox" :id "menu-clojure" :class "menu-toggle"}]
-              [:label {:class "menu-item justify-between" :for "menu-clojure"}
-               [:div {:class "flex gap-2"}
-                [:> icons-si/SiClojure {:size "1.5em"}]
-                [:span "Clojure"]]
-               [:<> menu-icon]]
-              [:div {:class "menu-item-collapse"}
-               [:div {:class "min-h-0"}
-                (map (fn [{:keys [tool-type input-type output-type title]}]
-                       ^{:key tool-type}
-                       [:a {:href (router/path-for :conversion :input-type input-type :output-type output-type)}
-                        [:label {:class "menu-item ml-6"} title]])
-                     tools/clojure-tools)]]]
-             ;; Encoding Tools
-             [:li
-              [:input {:type "checkbox" :id "menu-encoding" :class "menu-toggle"}]
-              [:label {:class "menu-item justify-between" :for "menu-encoding"}
-               [:div {:class "flex gap-2"}
-                [:> icons-lu/LuBinary {:size "1.5em"}]
-                [:span "Encoder / Decoder"]]
-               [:<> menu-icon]]
-              [:div {:class "menu-item-collapse"}
-               [:div {:class "min-h-0"}
-                (map (fn [{:keys [tool-type input-type output-type title]}]
-                       ^{:key tool-type}
-                       [:a {:href (router/path-for :conversion :input-type input-type :output-type output-type)}
-                        [:label {:class "menu-item ml-6"} title]])
-                     tools/encoding-tools)]]]
-             ;; Table Data Structure Tools
-             [:li
-              [:input {:type "checkbox" :id "menu-table" :class "menu-toggle"}]
-              [:label {:class "menu-item justify-between" :for "menu-table"}
-               [:div {:class "flex gap-2"}
-                [:> icons-go/GoTable {:size "1.5em"}]
-                [:span "Table"]]
-               [:<> menu-icon]]
-              [:div {:class "menu-item-collapse"}
-               [:div {:class "min-h-0"}
-                (map (fn [{:keys [tool-type input-type output-type title]}]
-                       ^{:key tool-type}
-                       [:a {:href (router/path-for :conversion :input-type input-type :output-type output-type)}
-                        [:label {:class "menu-item ml-6"} title]])
-                     tools/table-tools)]]]]]
+             (nav-menu-group :html "HTML" tools/html-tools icons-ti/TiHtml5)
+             (nav-menu-group :clojure "Clojure" tools/clojure-tools icons-si/SiClojure)
+             (nav-menu-group :encoding "Encoder / Decoder" tools/encoding-tools icons-lu/LuBinary)
+             (nav-menu-group :radix "Radix" tools/radix-tools icons-tb/TbNumber16Small)
+             (nav-menu-group :table "Table" tools/table-tools icons-go/GoTable)]]
 
            [:div {:class "divider my-0"}]
 
