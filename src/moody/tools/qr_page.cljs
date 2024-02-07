@@ -26,6 +26,7 @@
   []
   (let [level-ratom (r/atom "M")
         type-ratom (r/atom "image/png")
+        version-ratom (r/atom 1)
         scale-ratom (r/atom 4)
         margin-ratom (r/atom 4)
         mask-pattern-ratom (r/atom nil)
@@ -37,6 +38,7 @@
                                   @text-ratom
                                   (clj->js {:errorCorrectionLevel @level-ratom
                                             :type @type-ratom
+                                            :version @version-ratom
                                             :scale @scale-ratom
                                             :margin @margin-ratom
                                             :maskPattern @mask-pattern-ratom
@@ -51,7 +53,7 @@
        [:h2 {:class "text-xl my-4"}
         "QR Code Generator"]
 
-       [:section {:class "flex flex-col gap-6 pr-8"}
+       [:section {:class "flex flex-col gap-4 pr-8"}
 
         [:div {:class "flex items-center gap-1"}
          [:label {:class "w-32"
@@ -80,6 +82,20 @@
           (map (fn [type]
                  ^{:key type} [:option {:value type} type])
                image-types)]]
+
+        [:div {:class "flex items-center gap-1"}
+         [:label {:class "w-32"
+                  :for "version-input"}
+          "Version:"]
+         [:input {:class "select select-ghost-primary"
+                  :type "number"
+                  :min 1
+                  :max 40
+                  :id "version-input"
+                  :value @version-ratom
+                  :on-change (fn [e]
+                               (reset! version-ratom (.. e -target -value))
+                               (set-data-url))}]]
 
         [:div {:class "flex items-center gap-1"}
          [:label {:class "w-32"
