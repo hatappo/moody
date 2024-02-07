@@ -132,11 +132,4 @@
                                     (reset! output-editor-ratom editor)
                                     (reset! output-monaco-ratom monaco))}]]]]
          [:section
-          [:select {:class "select select-ghost-primary"
-                    :value editor-theme
-                    :on-change (fn [e]
-                                 (let [a (.. e -target -value)]
-                                   (set-editor-theme a)
-                                   ;;  JS オブジェクトなのでリアクティブに更新されない。そのため明示的に更新。
-                                   (.setTheme (.-editor ^js @input-monaco-ratom) a)))}
-           (map (fn [{:keys [val]}] ^{:key val} [:option {:value val} val]) themes)]]]))))
+          [:span]]]))))
