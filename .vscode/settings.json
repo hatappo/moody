@@ -39,6 +39,7 @@
     "peaceiris",
     "postwalk",
     "prewalk",
+    "qrcode",
     "ramdomly",
     "ratom",
     "rippleui",
@@ -47,6 +48,7 @@
     "taoensso",
     "testdouble",
     "vals",
+    "webp",
     "zipmap"
   ]
 }

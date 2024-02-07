@@ -10,7 +10,7 @@
     (fn []
       [:article {:class "flex flex-col gap-2"}
        [:h2 {:class "text-xl my-4"}
-        "Data Format Conversion - Radix Converter"]
+        "Radix Converter"]
 
        [:section {:class "flex flex-col gap-6 pr-8"}
 

@@ -39,6 +39,7 @@
     "create-react-class": "15.7.0",
     "encoding-japanese": "^2.0.0",
     "js-beautify": "^1.14.11",
+    "qrcode": "^1.5.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^5.0.1",

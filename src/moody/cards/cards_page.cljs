@@ -10,7 +10,7 @@
   []
   (let [icon?-ratom (r/atom true)
         search-word-ratom (r/atom "")
-        search-placeholder-ratom (r/atom (rand-nth ["\"html\"" "\"json\"" "\"clojure\"" "\"others\""]))]
+        search-placeholder-ratom (r/atom (rand-nth ["\"html\"" "\"json\"" "\"clojure\"" "\"others\"" "\"radix\"" "\"jwt\""]))]
     (fn []
       [:article {:class "flex flex-col gap-2"}
        [:h2 {:class "text-xl my-4"}

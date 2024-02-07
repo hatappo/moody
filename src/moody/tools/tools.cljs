@@ -437,9 +437,17 @@
     :label "Radix"
     :tool-tags #{:radix :hexadecimal :octan :binary}
     :icon icons-tb/TbNumber16Small
-    :icon-html "ffff  <br/> ↓↑ <br/> 65,535"
+    :icon-html "ffff <br/> ↓↑ <br/> 65,535"
     :path (router/path-for :radix)
-    :desc "Converts between multiple radix representations."}])
+    :desc "Converts between multiple radix representations."}
+   {:tool-type "qr"
+    :title "QR Code"
+    :label "QR Code"
+    :tool-tags #{:qr :encoding}
+    :icon icons-bs/BsQrCode
+    :icon-html "ffff <br/> ↓↑ <br/> 65,535"
+    :path (router/path-for :qr)
+    :desc "Generate QR code."}])
 
 (def ^:private conversions
   (->> notations

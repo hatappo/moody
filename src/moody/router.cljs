@@ -9,6 +9,7 @@
                   "settings/" :settings
                   "conversions/" {"" :conversions
                                   "radix/" :radix
+                                  "qr/" :qr
                                   [:input-type "/" :output-type] :conversion}
                   "about/" :about}])
 
