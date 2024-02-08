@@ -3,6 +3,26 @@
 @tailwind utilities;
 
 @layer components {
+  .moody-bg-transparent-checker {
+    background: linear-gradient(
+        45deg,
+        #333 25%,
+        transparent 25%,
+        transparent 75%,
+        #333 75%
+      ),
+      linear-gradient(
+        45deg,
+        #333 25%,
+        transparent 25%,
+        transparent 75%,
+        #333 75%
+      );
+    background-size: 16px 16px;
+    background-position:
+      0 0,
+      8px 8px;
+  }
 }
 
 @layer utilities {

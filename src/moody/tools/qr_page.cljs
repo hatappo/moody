@@ -1,7 +1,9 @@
 (ns moody.tools.qr-page
   (:require
    ["qrcode" :as QRCode]
-   [reagent.core :as r]))
+   [moody.util-str :refer [pad]]
+   [reagent.core :as r]
+   [taoensso.timbre :as timbre]))
 
 (def error-correction-levels
   [{:val "L" :error-resistance-percent 7 :level "Low"}
@@ -9,10 +11,10 @@
    {:val "Q" :error-resistance-percent 25 :level "Quartile"}
    {:val "H" :error-resistance-percent 30 :level "High"}])
 
-(def image-types ["image/png" "image/jpeg" "image/webp"])
+(def image-types ["image/png" "image/jpeg" "image/webp" "image/svg+xml"])
 
 (def mask-patterns
-  [{:val nil :label "Auto"}
+  [{:val "" :label "Auto"}
    {:val 0 :label 0}
    {:val 1 :label 1}
    {:val 2 :label 2}
@@ -22,29 +24,68 @@
    {:val 6 :label 6}
    {:val 7 :label 7}])
 
+(def versions
+  (cons
+   {:val "" :label "Auto"}
+   (map #(array-map :val % :label %) (range 1 41))))
+
+(def opacities
+  (concat [{:val "00" :label "00 (transparent)"}]
+          (map (fn [n]
+                 (let [hex (pad (.toString n 16) 2 "0")]
+                   (array-map :val hex :label hex)))
+               (range 1 255))
+          [{:val "ff" :label "ff (opaque)"}]))
+
 (defn qr-page
   []
   (let [level-ratom (r/atom "M")
         type-ratom (r/atom "image/png")
-        version-ratom (r/atom 1)
+        version-ratom (r/atom "")
         scale-ratom (r/atom 4)
         margin-ratom (r/atom 4)
-        mask-pattern-ratom (r/atom nil)
-        color-dark-ratom (r/atom "#000000ff")
-        color-light-ratom (r/atom "#ffffffff")
-        text-ratom (r/atom "abcde")
+        mask-pattern-ratom (r/atom "")
+        color-dark-ratom (r/atom "#000000")
+        color-light-ratom (r/atom "#ffffff")
+        opacity-dark-ratom (r/atom "ff")
+        opacity-light-ratom (r/atom "ff")
+        bg-pattern-ratom (r/atom false)
+        text-ratom (r/atom "https://example.com/")
         data-url-ratom (r/atom nil)
-        set-data-url #(.toDataURL QRCode
-                                  @text-ratom
-                                  (clj->js {:errorCorrectionLevel @level-ratom
-                                            :type @type-ratom
-                                            :version @version-ratom
-                                            :scale @scale-ratom
-                                            :margin @margin-ratom
-                                            :maskPattern @mask-pattern-ratom
-                                            :color {:dark @color-dark-ratom
-                                                    :light @color-light-ratom}})
-                                  (fn [_err url] (reset! data-url-ratom url)))]
+        data-text-ratom (r/atom nil)
+        error-ratom (r/atom nil)
+        set-data-url #(if (empty? @text-ratom)
+                        (do (reset! error-ratom nil)
+                            (reset! data-url-ratom nil))
+                        (let [options (clj->js
+                                       {:errorCorrectionLevel @level-ratom
+                                        :type @type-ratom
+                                        :version @version-ratom
+                                        :scale @scale-ratom
+                                        :margin @margin-ratom
+                                        :maskPattern @mask-pattern-ratom
+                                        :color {:dark (str @color-dark-ratom @opacity-dark-ratom)
+                                                :light (str @color-light-ratom @opacity-light-ratom)}})]
+                          (timbre/info options)
+                          (.toDataURL QRCode
+                                      @text-ratom
+                                      options
+                                      (fn [err url]
+                                        (if err
+                                          (do (reset! error-ratom (str err))
+                                              (reset! data-url-ratom nil)
+                                              (reset! data-text-ratom nil))
+                                          (do (reset! error-ratom nil)
+                                              (reset! data-url-ratom url)
+                                              (reset! data-text-ratom nil)))))
+                          (when (= @type-ratom "image/svg+xml")
+                            (.toString QRCode
+                                       @text-ratom
+                                       options
+                                       (fn [err text]
+                                         (if err
+                                           (reset! data-text-ratom nil)
+                                           (reset! data-text-ratom text)))))))]
 
     (set-data-url)
 
@@ -53,130 +94,184 @@
        [:h2 {:class "text-xl my-4"}
         "QR Code Generator"]
 
-       [:section {:class "flex flex-col gap-4 pr-8"}
+       [:div {:class "flex flex-wrap gap-20"}
 
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "error-correction-level-select"}
-          "Error correction:"]
-         [:select {:class "select select-ghost-primary"
-                   :id "error-correction-level-select"
-                   :value @level-ratom
+        [:section {:class "flex flex-col gap-4"}
+
+         [:div {:class "flex items-center"}
+          [:label {:class "w-32"
+                   :for "error-correction-level-select"}
+           "Error correction:"]
+          [:select {:class "select select-ghost-primary w-64"
+                    :id "error-correction-level-select"
+                    :value @level-ratom
+                    :on-change (fn [e]
+                                 (reset! level-ratom (.. e -target -value))
+                                 (set-data-url))}
+           (map (fn [{:keys [val level error-resistance-percent]}]
+                  ^{:key val} [:option {:value val} (str level " (~" error-resistance-percent "%)")])
+                error-correction-levels)]]
+
+         [:div {:class "flex items-center"}
+          [:label {:class "w-32"
+                   :for "image-type-select"}
+           "Image type:"]
+          [:select {:class "select select-ghost-primary w-64"
+                    :id "image-type-select"
+                    :value @type-ratom
+                    :on-change (fn [e]
+                                 (reset! type-ratom (.. e -target -value))
+                                 (set-data-url))}
+           (map (fn [type]
+                  ^{:key type} [:option {:value type} type])
+                image-types)]]
+
+         [:div {:class "flex items-center"}
+          [:label {:class "w-32"
+                   :for "version-input"}
+           "Version:"]
+          [:select {:class "select select-ghost-primary w-64"
+                    :id "version-select"
+                    :value @version-ratom
+                    :on-change (fn [e]
+                                 (reset! version-ratom (.. e -target -value))
+                                 (set-data-url))}
+           (map (fn [{:keys [val label]}]
+                  ^{:key label} [:option {:value val} label])
+                versions)]]
+
+         [:div {:class "flex items-center"}
+          [:label {:class "w-32"
+                   :for "scale-input"}
+           "Scale: " @scale-ratom]
+          [:input {:class "range w-64"
+                   :type "range"
+                   :min 1
+                   :max 64
+                   :id "scale-input"
+                   :value @scale-ratom
                    :on-change (fn [e]
-                                (reset! level-ratom (.. e -target -value))
-                                (set-data-url))}
-          (map (fn [{:keys [val level error-resistance-percent]}]
-                 ^{:key val} [:option {:value val} (str level " (~" error-resistance-percent "%)")])
-               error-correction-levels)]]
+                                (reset! scale-ratom (.. e -target -value))
+                                (set-data-url))}]]
 
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "image-type-select"}
-          "Image type:"]
-         [:select {:class "select select-ghost-primary"
-                   :id "image-type-select"
-                   :value @type-ratom
+         [:div {:class "flex items-center"}
+          [:label {:class "w-32"
+                   :for "margin-input"}
+           "Margin: " @margin-ratom]
+          [:input {:class "range w-64"
+                   :type "range"
+                   :min 0
+                   :max 8
+                   :id "margin-input"
+                   :value @margin-ratom
                    :on-change (fn [e]
-                                (reset! type-ratom (.. e -target -value))
-                                (set-data-url))}
-          (map (fn [type]
-                 ^{:key type} [:option {:value type} type])
-               image-types)]]
+                                (reset! margin-ratom (.. e -target -value))
+                                (set-data-url))}]]
 
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "version-input"}
-          "Version:"]
-         [:input {:class "select select-ghost-primary"
-                  :type "number"
-                  :min 1
-                  :max 40
-                  :id "version-input"
-                  :value @version-ratom
-                  :on-change (fn [e]
-                               (reset! version-ratom (.. e -target -value))
-                               (set-data-url))}]]
+         [:div {:class "flex items-center"}
+          [:label {:class "w-32"
+                   :for "mask-pattern-select"}
+           "Mask Pattern:"]
+          [:select {:class "select select-ghost-primary w-64"
+                    :id "mask-pattern-select"
+                    :value @mask-pattern-ratom
+                    :on-change (fn [e]
+                                 (reset! mask-pattern-ratom (.. e -target -value))
+                                 (set-data-url))}
+           (map (fn [{:keys [val label]}]
+                  ^{:key label} [:option {:value val} label])
+                mask-patterns)]]
 
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "scale-input"}
-          "Scale:"]
-         [:input {:class "select select-ghost-primary"
-                  :type "number"
-                  :min 1
-                  :max 50
-                  :id "scale-input"
-                  :value @scale-ratom
-                  :on-change (fn [e]
-                               (reset! scale-ratom (.. e -target -value))
-                               (set-data-url))}]]
-
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "margin-input"}
-          "Margin:"]
-         [:input {:class "select select-ghost-primary"
-                  :type "number"
-                  :min 0
-                  :max 10
-                  :id "margin-input"
-                  :value @margin-ratom
-                  :on-change (fn [e]
-                               (reset! margin-ratom (.. e -target -value))
-                               (set-data-url))}]]
-
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "mask-pattern-select"}
-          "Mask Pattern:"]
-         [:select {:class "select select-ghost-primary"
-                   :id "mask-pattern-select"
-                   :value @mask-pattern-ratom
-                   :on-change (fn [e]
-                                (reset! mask-pattern-ratom (.. e -target -value))
-                                (set-data-url))}
-          (map (fn [{:keys [val label]}]
-                 ^{:key label} [:option {:value val} label])
-               mask-patterns)]]
-
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "color-dark-input"}
-          "Dark color:"]
-         [:input {:class "select select-ghost-primary"
-                  :type "color"
-                  :min 0
-                  :max 10
-                  :id "color-dark-input"
-                  :value @color-dark-ratom
-                  :on-change (fn [e]
-                               (reset! color-dark-ratom (.. e -target -value))
-                               (set-data-url))}]]
-
-        [:div {:class "flex items-center gap-1"}
-         [:label {:class "w-32"
-                  :for "color-light-input"}
-          "Light color:"]
-         [:input {:class "select select-ghost-primary"
-                  :type "color"
-                  :min 0
-                  :max 10
-                  :id "color-light-input"
-                  :value @color-light-ratom
-                  :on-change (fn [e]
-                               (reset! color-light-ratom (.. e -target -value))
-                               (set-data-url))}]]
-
-        [:div {:class "flex flex-col gap-1"}
-         "Text"
-         [:textarea {:class "textarea textarea-ghost-primary"
-                     :rows 4
-                     :value @text-ratom
+         [:div
+          "Dark"
+          [:div {:class "flex justify-between p-2"}
+           [:div {:class "flex items-center"}
+            [:label {:class "mr-2"
+                     :for "color-dark-input"}
+             "Color:"]
+            [:input {:class "input input-ghost-primary w-16"
+                     :type "color"
+                     :id "color-dark-input"
+                     :value @color-dark-ratom
                      :on-change (fn [e]
-                                  (reset! text-ratom (.. e -target -value))
+                                  (reset! color-dark-ratom (.. e -target -value))
                                   (set-data-url))}]]
+           [:div {:class "flex items-center"}
+            [:label {:class "mr-2"
+                     :for "opacity-dark-select"}
+             "Opacity:"]
+            [:select {:class "select select-ghost-primary w-40"
+                      :id "opacity-dark-select"
+                      :value @opacity-dark-ratom
+                      :on-change (fn [e]
+                                   (reset! opacity-dark-ratom (.. e -target -value))
+                                   (set-data-url))}
+             (map (fn [{:keys [val label]}]
+                    ^{:key label} [:option {:value val} label])
+                  opacities)]]]]
 
-        [:div {:class "flex flex-col gap-1"}
-         "QR Code"
-         [:span
-          [:img {:src @data-url-ratom}]]]]])))
+         [:div
+          "Light"
+          [:div {:class "flex justify-between p-2"}
+           [:div {:class "flex items-center"}
+            [:label {:class "mr-2"
+                     :for "color-light-input"}
+             "Color:"]
+            [:input {:class "input input-ghost-primary w-16"
+                     :type "color"
+                     :id "color-light-input"
+                     :value @color-light-ratom
+                     :on-change (fn [e]
+                                  (reset! color-light-ratom (.. e -target -value))
+                                  (set-data-url))}]]
+           [:div {:class "flex items-center"}
+            [:label {:class "mr-2"
+                     :for "opacity-light-select"}
+             "Opacity:"]
+            [:select {:class "select select-ghost-primary w-40"
+                      :id "opacity-light-select"
+                      :value @opacity-light-ratom
+                      :on-change (fn [e]
+                                   (reset! opacity-light-ratom (.. e -target -value))
+                                   (set-data-url))}
+             (map (fn [{:keys [val label]}]
+                    ^{:key label} [:option {:value val} label])
+                  opacities)]]]]
+
+         [:div {:class "flex items-center"}
+          [:label {:class "mr-2"
+                   :for "bg-pattern-checkbox"}
+           "Display background checker pattern:"]
+          [:input {:class "switch switch-ghost-primary"
+                   :type "checkbox"
+                   :checked @bg-pattern-ratom
+                   :on-change #(swap! bg-pattern-ratom not)
+                   :id "bg-pattern-checkbox"}]]]
+
+
+        [:section {:class "flex flex-col gap-8 flex-1 min-w-96"}
+
+         [:div {:class "flex flex-col gap-1"}
+          "Text"
+          [:textarea {:class "textarea textarea-ghost-primary"
+                      :rows 8
+                      :value @text-ratom
+                      :on-change (fn [e]
+                                   (reset! text-ratom (.. e -target -value))
+                                   (set-data-url))}]]
+
+         [:div {:class "flex flex-col gap-1"}
+          "QR Code"
+          [:span {:class "text-error"}
+           @error-ratom]
+          [:div (when @bg-pattern-ratom {:class "moody-bg-transparent-checker w-fit p-5"})
+           [:img {:src @data-url-ratom}]
+           #_[:span {:dangerouslySetInnerHTML {:__html @data-text-ratom}}]]]
+         (when @data-text-ratom
+           [:div {:class "flex flex-col gap-1"}
+            "svg"
+            [:textarea {:class "textarea textarea-solid max-w-xl"
+                        :rows 20
+                        :read-only true
+                        :on-click #(.select (.. % -target))
+                        :value @data-text-ratom}]])]]])))
