@@ -445,7 +445,7 @@
     :label "QR Code"
     :tool-tags #{:qr :encoding}
     :icon icons-bs/BsQrCode
-    :icon-html "ffff <br/> ↓↑ <br/> 65,535"
+    :icon-html "🔳"
     :path (router/path-for :qr)
     :desc "Generate QR code."}])
 
