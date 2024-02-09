@@ -4,8 +4,6 @@
    ["react-icons/go" :as icons-go]
    ["react-icons/lia" :as icons-lia]
    ["react-icons/lu" :as icons-lu]
-   [clojure.string :as str]
-   [moody.router :as router]
    [moody.tools.editor :refer [word-wrap-val]]
    [moody.tools.tools :refer [convert notations
                               notations-by-notation-type]]
@@ -28,6 +26,10 @@
         update-input-text
         (fn [input-text]
           (rf/dispatch-sync [:update-input-text input-text @options-ratom]))
+
+        swap-converter
+        (fn []
+          (rf/dispatch-sync [:swap-converter]))
 
         set-input-monaco-editor-instances
         (fn [input-editor input-monaco]
@@ -72,10 +74,11 @@
                    (map (fn [{:keys [notation-type label]}] ^{:key notation-type} [:option {:value notation-type} label]))))]
            (let [output-notation (output-type notations-by-notation-type)]
              (when (get-in output-notation [:convert-fns input-type])
-               [:span {:class "tooltip tooltip-top", :data-tooltip "Swap 'from' and 'to'"}
-                [:a {:href (router/path-for :conversion :input-type output-type :output-type input-type)}
-                 [:button {:class "btn btn-sm"}
-                  [:> icons-go/GoArrowSwitch {:size "1.0em"}]]]]))]]
+               [:span {:class "tooltip tooltip-top" :data-tooltip "Swap 'from' and 'to'"}
+                #_[:a {:href (router/path-for :conversion :input-type output-type :output-type input-type)}]
+                [:button {:class "btn btn-sm"
+                          :on-click (fn [] (swap-converter))}
+                 [:> icons-go/GoArrowSwitch {:size "1.0em"}]]]))]]
 
          [:section {:class "grid grid-flow-col justify-stretch gap-4 "}
           [:div {:class "max-w-full"}
@@ -112,7 +115,7 @@
               [:> icons-lia/LiaCopySolid {:size "1.5em" :class "mr-2"}]
               "Copy"]
              [:span
-              {:class "tooltip tooltip-top", :data-tooltip "Paste the text on the clipboard to overwrite it with the conversion result."}
+              {:class "tooltip tooltip-top" :data-tooltip "Paste the text on the clipboard to overwrite it with the conversion result."}
               ;; Paste And Copy Button
               [:button {:class "btn btn-ghost-primary"
                         :on-click (fn [_e]

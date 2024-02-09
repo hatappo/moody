@@ -23,7 +23,7 @@
 
             (let [input-type (keyword (:input-type route-params))
                   output-type (keyword (:output-type route-params))
-                  prev-input-type (get-in db [:nav :input-type])
+                  {prev-input-type :input-type prev-output-type :output-type} (:nav db)
                   db (-> db
                          (assoc-in [:nav :active-page] handler)
                          (assoc-in [:nav :input-type] (keyword input-type))
@@ -39,12 +39,18 @@
                                   input-editor-lang (:editor-lang input-notation)
                                   output-editor-lang (if (= output-type :noop) input-editor-lang (:editor-lang output-notation))
                                   input-text (get-in db [:conversion :input-text])]
+                              (js/console.log input-text)
                               {:db db
                                :fx [[:dispatch [:set-input-editor-language input-editor-lang]]
                                     [:dispatch [:set-output-editor-language output-editor-lang]]
                                     [:dispatch [:update-input-text (cond
+                                                                     ;;  Fill example data when the input is empty.
                                                                      (str/blank? input-text) (:example input-notation)
+                                                                     ;;  Swap data output/input when `swap` transition.
+                                                                     (and (= prev-input-type output-type) (= prev-output-type input-type)) input-text
+                                                                     ;;  Fill example data when input-type is changed
                                                                      (not= prev-input-type input-type) (:example input-notation)
+                                                                     ;;  Otherwise, keep it.
                                                                      :else input-text)]]]})
                 {:db db}))))
 

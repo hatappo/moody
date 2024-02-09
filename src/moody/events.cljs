@@ -25,6 +25,17 @@
                     (assoc-in [:conversion :output-text] output-text))))))
 
 (reg-event-fx
+ :swap-converter
+ (fn-traced [{db :db} [event]]
+            (let [{:keys [input-type output-type]} (-> db :nav)
+                  {:keys [input-text output-text]} (-> db :conversion)]
+              (timbre/info {:event event} input-type output-type input-text output-text)
+              {:db (-> db
+                       (assoc-in [:conversion :input-text] output-text)
+                       (assoc-in [:conversion :output-text] input-text))
+               :navigate-to {:path (str "/conversions/" (name output-type) "/" (name input-type))}})))
+
+(reg-event-fx
  :navigate-to-conversion-page
  (fn-traced [{db :db} [_ {:keys [route-params]}]]
             (let [{:keys [input-type output-type]} route-params]
