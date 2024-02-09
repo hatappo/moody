@@ -12,7 +12,7 @@
    {:val "Q" :error-resistance-percent 25 :level "Quartile"}
    {:val "H" :error-resistance-percent 30 :level "High"}])
 
-(def image-types ["image/png" "image/jpeg" "image/webp" "image/svg+xml"])
+(def image-types ["image/svg+xml" "image/png" "image/jpeg" "image/webp"])
 
 (def mask-patterns
   [{:val "" :label "Auto"}
@@ -43,7 +43,7 @@
 (defn qr-page
   []
   (let [level-ratom (r/atom "M")
-        type-ratom (r/atom "image/png")
+        type-ratom (r/atom "image/svg+xml")
         version-ratom (r/atom "")
         scale-ratom (r/atom 4)
         margin-ratom (r/atom 4)
