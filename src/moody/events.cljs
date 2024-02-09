@@ -7,16 +7,18 @@
 
 (reg-event-db
  :set-options
- (fn-traced [db [_ options]]
-            (timbre/info {:event :set-options :options options})
+ (fn-traced [db [event options]]
+            (timbre/info {:event event :options options})
             (assoc-in db [:conversion :options] options)))
 
 (reg-event-db
  :update-input-text
  (fn-traced [db [event input-text options]]
             (let [{:keys [input-type output-type] :as nav} (-> db :nav)]
+
               (timbre/trace {:event event :input-text input-text})
               (timbre/info {:event event :nav nav :options options})
+
               (let [output-text (convert input-text (merge options {:input-type input-type :output-type output-type}))]
                 (-> db
                     (assoc-in [:conversion :input-text] input-text)

@@ -13,4 +13,4 @@
         [:p
          "This tools accepts and transforms various data structures from left to right."]
         [:a {:href (router/path-for :cards)}
-         [:button {:class "btn btn-solid-primary my-8"} "Show All Tools"]]]])))
+         [:button {:class "btn my-8"} "Show All Tools"]]]])))

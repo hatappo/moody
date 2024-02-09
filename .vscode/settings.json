@@ -13,7 +13,8 @@
     "editor.formatOnSave": false
   },
   "tailwindCSS.experimental.classRegex": [
-    ":class\\s+\"([^\"]*)\"",
+    ":class*\\s+\"([^\"]*)\"",
+    ":className*\\s+\"([^\"]*)\"",
     ":[\\w-.#>]+\\.([\\w-]*)"
   ],
   "tailwindCSS.includeLanguages": {
@@ -47,6 +48,7 @@
     "tailwindcss",
     "taoensso",
     "testdouble",
+    "toastify",
     "vals",
     "webp",
     "zipmap"

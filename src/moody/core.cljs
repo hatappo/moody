@@ -42,7 +42,7 @@
       [:label {:for "sidebar-mobile-fixed" :class "sidebar-overlay"}]
       [nav]]
      [:main {:class "flex w-full flex-col py-2"}
-      [:div {:class "w-fit"}
+      [:div {:class "w-fit" :id "main-container"}
        ;;  sidebar opener on mobile
        [:label {:for "sidebar-mobile-fixed" :class "btn-primary btn sm:hidden"} "Open Sidebar"]]
       [pages active-page]]]))

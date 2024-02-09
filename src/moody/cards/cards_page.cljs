@@ -10,7 +10,7 @@
   []
   (let [icon?-ratom (r/atom true)
         search-word-ratom (r/atom "")
-        search-placeholder-ratom (r/atom (rand-nth ["\"html\"" "\"json\"" "\"clojure\"" "\"others\"" "\"radix\"" "\"jwt\""]))]
+        search-placeholder-ratom (r/atom (rand-nth ["\"qr\"" "\"html\"" "\"json\"" "\"clojure\"" "\"others\"" "\"radix\"" "\"jwt\""]))]
     (fn []
       [:article {:class "flex flex-col gap-2"}
        [:h2 {:class "text-xl my-4"}
@@ -19,9 +19,9 @@
         [:div {:class "flex items-center gap-4"}
          [:div {:class "form-control"}
           [:input
-           {:type "search"
+           {:class "input input-ghost-primary input-lg pl-11"
+            :type "search"
             :id "search-input"
-            :class "input input-lg pl-11"
             :value @search-word-ratom
             :placeholder @search-placeholder-ratom
             :on-change #(reset! search-word-ratom (.. % -target -value))}]

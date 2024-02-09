@@ -1,6 +1,7 @@
 (ns moody.tools.qr-page
   (:require
    ["qrcode" :as QRCode]
+   [moody.components.button :refer [copy-button paste-button]]
    [moody.util-str :refer [pad]]
    [reagent.core :as r]
    [taoensso.timbre :as timbre]))
@@ -37,6 +38,8 @@
                (range 1 255))
           [{:val "ff" :label "ff (opaque)"}]))
 
+(defn to-hex [n] (-> n str (js/Number.parseInt) (.toString 16) (pad 2 "0")))
+
 (defn qr-page
   []
   (let [level-ratom (r/atom "M")
@@ -47,8 +50,8 @@
         mask-pattern-ratom (r/atom "")
         color-dark-ratom (r/atom "#000000")
         color-light-ratom (r/atom "#ffffff")
-        opacity-dark-ratom (r/atom "ff")
-        opacity-light-ratom (r/atom "ff")
+        opacity-dark-ratom (r/atom "255")
+        opacity-light-ratom (r/atom "255")
         bg-pattern-ratom (r/atom false)
         text-ratom (r/atom "https://example.com/")
         data-url-ratom (r/atom nil)
@@ -64,8 +67,8 @@
                                         :scale @scale-ratom
                                         :margin @margin-ratom
                                         :maskPattern @mask-pattern-ratom
-                                        :color {:dark (str @color-dark-ratom @opacity-dark-ratom)
-                                                :light (str @color-light-ratom @opacity-light-ratom)}})]
+                                        :color {:dark (str @color-dark-ratom (to-hex @opacity-dark-ratom))
+                                                :light (str @color-light-ratom (to-hex @opacity-light-ratom))}})]
                           (timbre/info options)
                           (.toDataURL QRCode
                                       @text-ratom
@@ -183,12 +186,12 @@
                 mask-patterns)]]
 
          [:div
-          "Dark"
-          [:div {:class "flex justify-between p-2"}
-           [:div {:class "flex items-center"}
-            [:label {:class "mr-2"
-                     :for "color-dark-input"}
-             "Color:"]
+          "Dark color"
+          [:div {:class "flex flex-col gap-2 py-2 px-4"}
+           [:div {:class "flex items-center gap-2"}
+            [:label {:for "color-dark-input"}
+             "Color code:"]
+            [:span @color-dark-ratom]
             [:input {:class "input input-ghost-primary w-16"
                      :type "color"
                      :id "color-dark-input"
@@ -196,27 +199,27 @@
                      :on-change (fn [e]
                                   (reset! color-dark-ratom (.. e -target -value))
                                   (set-data-url))}]]
-           [:div {:class "flex items-center"}
-            [:label {:class "mr-2"
-                     :for "opacity-dark-select"}
+           [:div {:class "flex items-center justify-between gap-2"}
+            [:label {:for "opacity-dark-input"}
              "Opacity:"]
-            [:select {:class "select select-ghost-primary w-40"
-                      :id "opacity-dark-select"
-                      :value @opacity-dark-ratom
-                      :on-change (fn [e]
-                                   (reset! opacity-dark-ratom (.. e -target -value))
-                                   (set-data-url))}
-             (map (fn [{:keys [val label]}]
-                    ^{:key label} [:option {:value val} label])
-                  opacities)]]]]
+            [:span (to-hex @opacity-dark-ratom)]
+            [:input {:class "range w-64"
+                     :type "range"
+                     :min 0
+                     :max 255
+                     :id "opacity-dark-input"
+                     :value @opacity-dark-ratom
+                     :on-change (fn [e]
+                                  (reset! opacity-dark-ratom (.. e -target -value))
+                                  (set-data-url))}]]]]
 
          [:div
-          "Light"
-          [:div {:class "flex justify-between p-2"}
-           [:div {:class "flex items-center"}
-            [:label {:class "mr-2"
-                     :for "color-light-input"}
-             "Color:"]
+          "Light color"
+          [:div {:class "flex flex-col gap-2 py-2 px-4"}
+           [:div {:class "flex items-center gap-2"}
+            [:label {:for "color-light-input"}
+             "Color code:"]
+            [:span @color-light-ratom]
             [:input {:class "input input-ghost-primary w-16"
                      :type "color"
                      :id "color-light-input"
@@ -224,19 +227,19 @@
                      :on-change (fn [e]
                                   (reset! color-light-ratom (.. e -target -value))
                                   (set-data-url))}]]
-           [:div {:class "flex items-center"}
-            [:label {:class "mr-2"
-                     :for "opacity-light-select"}
+           [:div {:class "flex items-center justify-between gap-2"}
+            [:label {:for "opacity-light-input"}
              "Opacity:"]
-            [:select {:class "select select-ghost-primary w-40"
-                      :id "opacity-light-select"
-                      :value @opacity-light-ratom
-                      :on-change (fn [e]
-                                   (reset! opacity-light-ratom (.. e -target -value))
-                                   (set-data-url))}
-             (map (fn [{:keys [val label]}]
-                    ^{:key label} [:option {:value val} label])
-                  opacities)]]]]
+            [:span (to-hex @opacity-light-ratom)]
+            [:input {:class "range w-64"
+                     :type "range"
+                     :min 0
+                     :max 255
+                     :id "opacity-light-input"
+                     :value @opacity-light-ratom
+                     :on-change (fn [e]
+                                  (reset! opacity-light-ratom (.. e -target -value))
+                                  (set-data-url))}]]]]
 
          [:div {:class "flex items-center"}
           [:label {:class "mr-2"
@@ -249,11 +252,15 @@
                    :id "bg-pattern-checkbox"}]]]
 
 
-        [:section {:class "flex flex-col gap-8 flex-1 min-w-96"}
+        [:section {:class "flex flex-col gap-8 flex-1 min-w-96 mr-8"}
 
-         [:div {:class "flex flex-col gap-1"}
-          "Text"
-          [:textarea {:class "textarea textarea-ghost-primary"
+         [:div {:class "flex flex-col gap-1 max-w-xl"}
+          [:div {:class "flex items-center gap-1 "}
+           [:span {:class "mr-auto"}
+            "Text:"]
+           [copy-button (fn [] @text-ratom)]
+           [paste-button (fn [text] (reset! text-ratom text))]]
+          [:textarea {:class "textarea textarea-ghost-primary max-w-xl"
                       :rows 8
                       :value @text-ratom
                       :on-change (fn [e]
@@ -261,15 +268,18 @@
                                    (set-data-url))}]]
 
          [:div {:class "flex flex-col gap-1"}
-          "QR Code"
+          "QR Code:"
           [:span {:class "text-error"}
            @error-ratom]
           [:div (when @bg-pattern-ratom {:class "moody-bg-transparent-checker w-fit p-5"})
            [:img {:src @data-url-ratom}]
            #_[:span {:dangerouslySetInnerHTML {:__html @data-text-ratom}}]]]
          (when @data-text-ratom
-           [:div {:class "flex flex-col gap-1"}
-            "svg"
+           [:div {:class "flex flex-col gap-1 max-w-xl"}
+            [:div {:class "flex items-center"}
+             [:span {:class "mr-auto"}
+              "svg:"]
+             [copy-button (fn [] @data-text-ratom)]]
             [:textarea {:class "textarea textarea-solid max-w-xl"
                         :rows 20
                         :read-only true

@@ -44,7 +44,8 @@
     "react-dom": "18.2.0",
     "react-icons": "^5.0.1",
     "rippleui": "^1.12.1",
-    "sql-formatter": "^15.2.0"
+    "sql-formatter": "^15.2.0",
+    "toastify-js": "^1.12.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
