@@ -6,7 +6,7 @@
 
 (def default-options
   {:text "Copied"
-   :duration 5000
+   :duration 4000
    :close true
    :oldestFirst false ; <- not effective
    :position "" ; <- not effective
