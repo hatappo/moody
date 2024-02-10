@@ -5,17 +5,21 @@
                        write-to-clipboard-and-show-toast]]))
 
 (defn copy-button
-  [get-text-fn]
-  (fn []
-    [:button {:class "btn"
-              :on-click #(write-to-clipboard-and-show-toast (get-text-fn) nil)}
-     [:> icons-lia/LiaCopySolid {:size "1.5em" :class "mr-2"}]
-     "Copy"]))
+  ([s]
+   (copy-button s "Copy"))
+  ([s label]
+   [:button {:class "btn btn-sm gap-2"
+             :title "Copy"
+             :on-click #(write-to-clipboard-and-show-toast s nil)}
+    [:> icons-lia/LiaCopySolid {:size "1.3em"}]
+    label]))
 
 (defn paste-button
-  []
-  (fn [paste-text-fn]
-    [:button {:class "btn btn-ghost-primary"
-              :on-click #(read-from-clipboard-and-show-toast paste-text-fn)}
-     [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-2"}]
-     "Paste"]))
+  ([paste-text-fn]
+   (paste-button paste-text-fn "Paste"))
+  ([paste-text-fn label]
+   [:button {:class "btn btn-sm btn-ghost-primary gap-2"
+             :title "Paste"
+             :on-click #(read-from-clipboard-and-show-toast paste-text-fn)}
+    [:> icons-lia/LiaPasteSolid {:size "1.3em"}]
+    label]))

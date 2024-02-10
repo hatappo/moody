@@ -4,12 +4,11 @@
    ["react-icons/go" :as icons-go]
    ["react-icons/lia" :as icons-lia]
    ["react-icons/lu" :as icons-lu]
+   [moody.components.button :refer [copy-button paste-button]]
    [moody.tools.editor :refer [word-wrap-val]]
    [moody.tools.tools :refer [convert notations
                               notations-by-notation-type]]
-   [moody.util :refer [read-from-clipboard
-                       read-from-clipboard-and-show-toast
-                       write-to-clipboard-and-show-toast]]
+   [moody.util :refer [read-from-clipboard write-to-clipboard-and-show-toast]]
    [re-frame.core :as rf]
    [reagent.core :as r]))
 
@@ -75,7 +74,6 @@
            (let [output-notation (output-type notations-by-notation-type)]
              (when (get-in output-notation [:convert-fns input-type])
                [:span {:class "tooltip tooltip-top" :data-tooltip "Swap 'from' and 'to'"}
-                #_[:a {:href (router/path-for :conversion :input-type output-type :output-type input-type)}]
                 [:button {:class "btn btn-sm"
                           :on-click (fn [] (swap-converter))}
                  [:> icons-go/GoArrowSwitch {:size "1.0em"}]]]))]]
@@ -86,13 +84,10 @@
             [:div {:class "ml-1"}
              "Input"]
             [:div {:class "flex justify-end gap-2 w-full mr-1"}
-             [:button {:class "btn btn-ghost-primary"
+             [:button {:class "btn btn-sm"
                        :on-click #(update-input-text "")}
-              [:> icons-lu/LuEraser {:size "1.5em"}]]
-             [:button {:class "btn btn-ghost-primary"
-                       :on-click #(read-from-clipboard-and-show-toast (fn [text] (update-input-text text)))}
-              [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-2"}]
-              "Paste"]]]
+              [:> icons-lu/LuEraser {:size "1.3em"}]]
+             (paste-button (fn [text] (update-input-text text)))]]
            [:div {:class "flex justify-center max-w-full"}
             [:> Editor {:height "70vh"
                         :width "99%"
@@ -110,14 +105,11 @@
           [:div {:class "max-w-full"}
            [:div {:class "flex items-center my-2"}
             [:div {:class "flex gap-2 w-full"}
-             [:button {:class "btn"
-                       :on-click #(write-to-clipboard-and-show-toast output-text nil)}
-              [:> icons-lia/LiaCopySolid {:size "1.5em" :class "mr-2"}]
-              "Copy"]
+             (copy-button output-text)
              [:span
               {:class "tooltip tooltip-top" :data-tooltip "Paste the text on the clipboard to overwrite it with the conversion result."}
               ;; Paste And Copy Button
-              [:button {:class "btn btn-ghost-primary"
+              [:button {:class "btn btn-sm"
                         :on-click (fn [_e]
                                     (read-from-clipboard
                                      (fn [text] (update-input-text text)
@@ -125,9 +117,9 @@
                                        (let [another-output-text (convert text {:input-type input-type :output-type output-type})
                                              toast-msg "Pasted and copied converted text 👍 "]
                                          (write-to-clipboard-and-show-toast another-output-text nil {:text toast-msg})))))}
-               [:> icons-lia/LiaPasteSolid {:size "1.5em" :class "mr-1"}]
+               [:> icons-lia/LiaPasteSolid {:size "1.3em" :class "mr-1"}]
                "&"
-               [:> icons-lia/LiaCopySolid {:size "1.5em" :class "ml-1"}]]]]
+               [:> icons-lia/LiaCopySolid {:size "1.3em" :class "ml-1"}]]]]
             [:div {:class "flex items-center gap-2 justify-end w-full"}
              [:label {:for "pretty-checkbox"}
               "no-prettify"]
