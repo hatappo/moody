@@ -12,7 +12,7 @@
    :position "" ; <- not effective
    :selector "main-container"
    :offset {:x 10 :y 10}
-   :className "opacity-95 rounded-lg z-10 m-4 py-2 px-4 absolute right-0"})
+   :className "opacity-95 rounded-sm z-10 m-4 py-2 px-4 fixed right-0"})
 
 (defn- merge-options
   [this that]
