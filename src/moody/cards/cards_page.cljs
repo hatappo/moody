@@ -38,7 +38,7 @@
                (filter (fn [{:keys [relevant-words-text]}]
                          (str/includes? relevant-words-text (str/lower-case @search-word-ratom))))
                (map-indexed
-                (fn [_idx {:keys [tool-type path tool-tags icon icon-html title desc]}]
+                (fn [_idx {:keys [tool-type path tags icon icon-html title desc]}]
                   ^{:key tool-type}
                   [:a {:href path}
                    [:div {:class "rounded-md bg-gray-3 h-80 w-44"}
@@ -50,7 +50,7 @@
                      [:h3 {:class "text-content1 text-base"} title]
                      [:p {:class "text-content2 text-xs"} desc]
                      [:div {:class "flex flex-wrap justify-start w-full gap-1"}
-                      (->> tool-tags sort (map (fn [tag] ^{:key tag} [:span {:class "badge badge-flat-primary"} (str \# (name tag))])))]]]]))))]
+                      (->> tags sort (map (fn [tag] ^{:key tag} [:span {:class "badge badge-flat-primary"} (str \# (name tag))])))]]]]))))]
         [:div {:class "flex items-center"}
          [:label {:for "icon-checkbox"} "Icon:"]
          [:input {:type "checkbox"

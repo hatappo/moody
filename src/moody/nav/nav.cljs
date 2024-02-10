@@ -3,6 +3,7 @@
    ["react-icons/go" :as icons-go]
    ["react-icons/io5" :as icons-io5]
    ["react-icons/lu" :as icons-lu]
+   ["react-icons/md" :as icons-md]
    ["react-icons/si" :as icons-si]
    ["react-icons/tb" :as icons-tb]
    ["react-icons/ti" :as icons-ti]
@@ -45,6 +46,7 @@
              (nav-menu-group :html "HTML" tools/html-tools icons-ti/TiHtml5)
              (nav-menu-group :clojure "Clojure" tools/clojure-tools icons-si/SiClojure)
              (nav-menu-group :encoding "Encoder / Decoder" tools/encoding-tools icons-lu/LuBinary)
+             (nav-menu-group :crypto "Crypto" tools/crypto-tools icons-md/MdEnhancedEncryption)
              (nav-menu-group :radix "Radix" tools/radix-tools icons-tb/TbNumber16Small)
              (nav-menu-group :table "Table" tools/table-tools icons-go/GoTable)]]
 

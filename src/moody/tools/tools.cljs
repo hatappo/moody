@@ -214,6 +214,25 @@
        (map ipv4-decimal->ipv4-binary-)
        (str/join "\n")))
 
+(defn js-import-statements->cljs-require-vectors
+  [statements]
+  (->> (str/split statements "\n")
+       (remove str/blank?)
+       (map (fn [stmt]
+              (let [[_stmt star object module]
+                    (->> stmt
+                         str/trim
+                         ;;  NOTE: Support `named import` with one value, `default import`, and `namespace import`
+                         (re-matches #"\s*import\s+(\*\s+as\s+)?(\{?\s*[-_/a-zA-Z0-9.]+\s*\}?)\s+from\s+[\"']([-_/a-zA-Z0-9.]+)[\"']\s*;?\s*"))]
+                (js/console.log _stmt star object module)
+                (cond
+                  (and object module)
+                  (if (str/includes? object "{")
+                    (str "   [\"" module "\" :refer [" (str/replace object #"[\s\{\}]" "") "]]")
+                    (str "   [\"" module "\" :as " object "]"))))))
+       (str/join "\n")
+       (#(str "  (:require\n" % "\n  )"))))
+
 (def notations
   [{:notation-type :noop
     :title nil
@@ -224,6 +243,16 @@
     :tags #{}
     :example ""
     :convert-fns {}}
+   {:notation-type :plain
+    :title "Plain Text"
+    :label "Plain text"
+    :editor-lang "plaintext"
+    :icon icons-bs/BsAlphabet
+    :icon-html "a b c"
+    :tags #{}
+    :example "https://example.com/index.html?word=ねこ&emoji-=🐱"
+    :convert-fns {:base64 plain->base64
+                  :uri plain->uri}}
    {:notation-type :analysis
     :title "Analysis"
     :label "Result of analysis"
@@ -345,16 +374,6 @@
     :tags #{:sql :db}
     :example ""
     :convert-fns {:noop sql->noop}}
-   {:notation-type :plain
-    :title "Plain Text"
-    :label "plain text"
-    :editor-lang "plaintext"
-    :icon icons-bs/BsAlphabet
-    :icon-html "a b c"
-    :tags #{}
-    :example "a b c"
-    :convert-fns {:base64 plain->base64
-                  :uri plain->uri}}
    {:notation-type :base64
     :title "Base 64"
     :label "Base64"
@@ -409,6 +428,24 @@
     :tags #{:network :radix}
     :example "192.168.1.100\n192.168.2.100\n192.168.3.100\n"
     :convert-fns {:ipv4-binary ipv4-decimal->ipv4-binary}}
+   {:notation-type :js-import-statements
+    :title "Imports in JS"
+    :label "Imports in JS"
+    :editor-lang "javascript"
+    :icon icons-si/SiJavascript
+    :icon-html "import x.."
+    :tags #{:javascript}
+    :example "import { createApp } from 'vue'\nimport React from 'react';\nimport * as FilePond from 'filepond';\n"
+    :convert-fns {:cljs-require-vectors js-import-statements->cljs-require-vectors}}
+   {:notation-type :cljs-require-vectors
+    :title ":require vectors in cljs"
+    :label ":require vectors in cljs"
+    :editor-lang "clojure"
+    :icon icons-si/SiClojure
+    :icon-html "\"x\" :as X]"
+    :tags #{:clojure}
+    :example "[\"vue\" :refer [createApp]]\n[\"react\" :refer [React]]\n"
+    :convert-fns {}}
    {:notation-type :auto
     :title "Auto"
     :label "Auto"
@@ -435,15 +472,23 @@
   [{:tool-type "radix"
     :title "Radix"
     :label "Radix"
-    :tool-tags #{:radix :hexadecimal :octan :binary}
+    :tags #{:radix :hexadecimal :octan :binary}
     :icon icons-tb/TbNumber16Small
     :icon-html "ffff <br/> ↓↑ <br/> 65,535"
     :path (router/path-for :radix)
     :desc "Converts between multiple radix representations."}
+   {:tool-type "hash"
+    :title "Hash & Checksum"
+    :label "Hash & Checksum"
+    :tags #{:crypto}
+    :icon icons-pi/PiHash
+    :icon-html "a b c <br/> ↓ <br/> 22faaaf3..."
+    :path (router/path-for :hash)
+    :desc "Converts between multiple radix representations."}
    {:tool-type "qr"
     :title "QR Code"
     :label "QR Code"
-    :tool-tags #{:qr :encoding}
+    :tags #{:qr :encoding}
     :icon icons-bs/BsQrCode
     :icon-html "🔳"
     :path (router/path-for :qr)
@@ -470,13 +515,17 @@
                         ;; :input-type in-type
                         ;; :output-type out-type
                         :title (cond
-                                 (:encoding out-tags) (str "Encode " out-label)
-                                 (:encoding in-tags) (str "Decode " in-label)
+                                 (:encoding out-tags) (str "Encode " out-title)
+                                 (:encoding in-tags) (str "Decode " in-title)
+                                 (= :plain in-type) out-title
                                  out-title (str in-title " -> " out-title)
                                  :else in-title)
                         :label (str in-title " -> " (if out-title out-title in-title))
-                        :tool-tags (union in-tags out-tags)
-                        :icon (if (:encoding out-tags) out-icon in-icon)
+                        :tags (union in-tags out-tags)
+                        :icon (cond
+                                (= in-type :plain) out-icon
+                                (:encoding out-tags) out-icon
+                                :else in-icon)
                         :icon-html (if out-icon-html (str in-icon-html " <br/> ↓ <br/> "  out-icon-html) in-icon-html)
                         :path (router/path-for :conversion :input-type in-type :output-type out-type)
                         :desc (cond
@@ -492,8 +541,8 @@
 
 (defn assoc-relevant-words-text
   [tools-raw]
-  (map (fn [{:keys [title label desc tool-tags] :as tool}]
-         (let [tag-words-text (str/join tool-tags)
+  (map (fn [{:keys [title label desc tags] :as tool}]
+         (let [tag-words-text (str/join tags)
                relevant-words-text (str "\n" title "\n" label "\n" desc "\n" tag-words-text)]
            (assoc tool :relevant-words-text (str/lower-case relevant-words-text))))
        tools-raw))
@@ -502,22 +551,25 @@
   (assoc-relevant-words-text (concat other-conversions conversions)))
 
 (def clojure-tools
-  (filter #(and (:clojure (:tool-tags %)) (not= (:output-type %) :noop)) tools))
+  (filter #(and (:clojure (:tags %)) (not= (:output-type %) :noop)) tools))
 
 (def html-tools
   (->> tools
-       (filter #(and (:html (:tool-tags %)) (not= (:output-type %) :noop)))
+       (filter #(and (:html (:tags %)) (not= (:output-type %) :noop)))
        (sort-by :title)
        reverse))
 
 (def encoding-tools
   (->> tools
-       (filter #(and (:encoding (:tool-tags %)) (not= (:output-type %) :noop)))
+       (filter #(and (:encoding (:tags %)) (not= (:output-type %) :noop)))
        (sort-by :title)
        reverse))
 
 (def table-tools
-  (filter #(and (:table (:tool-tags %)) (not= (:output-type %) :noop)) tools))
+  (filter #(and (:table (:tags %)) (not= (:output-type %) :noop)) tools))
 
 (def radix-tools
-  (filter #(and (:radix (:tool-tags %)) (not= (:output-type %) :noop)) tools))
+  (filter #(and (:radix (:tags %)) (not= (:output-type %) :noop)) tools))
+
+(def crypto-tools
+  (filter #(and (:crypto (:tags %)) (not= (:output-type %) :noop)) tools))

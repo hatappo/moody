@@ -59,7 +59,7 @@
     (.. js/navigator -clipboard (writeText s))
     (fn []
       (when then-fn (then-fn))
-      (write-to-clipboard s #(show-toast-success (merge {:text "Copied 👍 "} toast-options)))))))
+      (write-to-clipboard s #(show-toast-success (merge {:text "Copied "} toast-options)))))))
 
 (defn read-from-clipboard-and-show-toast
   ([then-fn]
@@ -69,4 +69,4 @@
     (.. js/navigator -clipboard (readText))
     (fn [text]
       (when then-fn (then-fn text))
-      (read-from-clipboard #(show-toast-success (merge {:text "Pasted 👍 "} toast-options)))))))
+      (read-from-clipboard #(show-toast-success (merge {:text "Pasted "} toast-options)))))))
