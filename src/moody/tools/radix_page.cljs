@@ -3,6 +3,12 @@
    [clojure.string :as str]
    [reagent.core :as r]))
 
+(def radices
+  [{:base 10 :re #".{1,3}" :separator "," :title "Decimal"}
+   {:base 16 :re #".{1,4}" :separator " " :title "Hexadecimal"}
+   {:base 8 :re #".{1,3}" :separator " " :title "Octal"}
+   {:base 2 :re #".{1,4}" :separator " " :title "Binary"}])
+
 (defn radix-page
   []
   (let [num-ratom (r/atom 1048576)
@@ -23,7 +29,7 @@
                   :checked @format-ratom
                   :on-change (fn [_e] (swap! format-ratom not))}]]
 
-        [:div {:class "flex flex-col gap-6"}
+        [:div {:class "flex flex-col gap-4"}
          (doall
           (map (fn [{:keys [base title re separator]}]
                  (let [html-id (str "radix-" title "-input")]
@@ -45,7 +51,4 @@
                                           s)))
                              :on-change #(reset! num-ratom (js/Number.parseInt (str/replace (.. % -target -value) #"[ ,]" "") base))
                              :id html-id}]]))
-               [{:base 10 :re #".{1,3}" :separator "," :title "Decimal"}
-                {:base 16 :re #".{1,4}" :separator " " :title "Hexadecimal"}
-                {:base 8 :re #".{1,3}" :separator " " :title "Octal"}
-                {:base 2 :re #".{1,4}" :separator " " :title "Binary"}]))]]])))
+               radices))]]])))
