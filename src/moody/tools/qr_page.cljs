@@ -30,14 +30,6 @@
    {:val "" :label "Auto"}
    (map #(array-map :val % :label %) (range 1 41))))
 
-(def opacities
-  (concat [{:val "00" :label "00 (transparent)"}]
-          (map (fn [n]
-                 (let [hex (pad (.toString n 16) 2 "0")]
-                   (array-map :val hex :label hex)))
-               (range 1 255))
-          [{:val "ff" :label "ff (opaque)"}]))
-
 (defn to-hex [n] (-> n str (js/Number.parseInt) (.toString 16) (pad 2 "0")))
 
 (defn qr-page
@@ -187,7 +179,7 @@
 
          [:div
           "Dark color"
-          [:div {:class "flex flex-col gap-2 py-2 px-4"}
+          [:div {:class "flex flex-col gap-1 py-1 px-4"}
            [:div {:class "flex items-center gap-2"}
             [:label {:for "color-dark-input"}
              "Color code:"]
@@ -215,7 +207,7 @@
 
          [:div
           "Light color"
-          [:div {:class "flex flex-col gap-2 py-2 px-4"}
+          [:div {:class "flex flex-col gap-1 py-1 px-4"}
            [:div {:class "flex items-center gap-2"}
             [:label {:for "color-light-input"}
              "Color code:"]
@@ -258,11 +250,12 @@
           [:div {:class "flex items-center gap-1 "}
            [:span {:class "mr-auto"}
             "Text:"]
-           [copy-button (fn [] @text-ratom)]
-           [paste-button (fn [text] (reset! text-ratom text))]]
+           (copy-button @text-ratom)
+           ;;  TODO: not working well with `:default-value`
+           #_(paste-button (fn [text] (reset! text-ratom text)))]
           [:textarea {:class "textarea textarea-ghost-primary max-w-xl"
                       :rows 8
-                      :value @text-ratom
+                      :default-value @text-ratom
                       :on-change (fn [e]
                                    (reset! text-ratom (.. e -target -value))
                                    (set-data-url))}]]
@@ -279,9 +272,9 @@
             [:div {:class "flex items-center"}
              [:span {:class "mr-auto"}
               "svg:"]
-             [copy-button (fn [] @data-text-ratom)]]
+             (copy-button @data-text-ratom)]
             [:textarea {:class "textarea textarea-solid max-w-xl"
                         :rows 20
                         :read-only true
                         :on-click #(.select (.. % -target))
-                        :value @data-text-ratom}]])]]])))
+                        :default-value @data-text-ratom}]])]]])))
