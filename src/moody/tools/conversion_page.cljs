@@ -122,11 +122,11 @@
                [:> icons-lia/LiaCopySolid {:size "1.3em" :class "ml-1"}]]]]
             [:div {:class "flex items-center gap-2 justify-end w-full"}
              [:label {:for "pretty-checkbox"}
-              "no-prettify"]
+              "pretty"]
              [:input {:class "switch switch-bordered-primary mr-2"
                       :type "checkbox"
                       :id "pretty-checkbox"
-                      :checked (not (:pretty? @options-ratom))
+                      :checked (:pretty? @options-ratom)
                       :on-change (fn [_e] (swap! options-ratom update :pretty? not) (update-input-text input-text))}]]]
 
            [:div {:class "max-w-full"}
