@@ -12,7 +12,7 @@
    {:val "Q" :error-resistance-percent 25 :level "Quartile"}
    {:val "H" :error-resistance-percent 30 :level "High"}])
 
-(def image-types ["image/svg+xml" "image/png" "image/jpeg" "image/webp"])
+(def image-types ["image/png" "image/jpeg" "image/webp" "image/svg+xml"])
 
 (def mask-patterns
   [{:val "" :label "Auto"}
@@ -35,7 +35,7 @@
 (defn qr-page
   []
   (let [level-ratom (r/atom "M")
-        type-ratom (r/atom "image/svg+xml")
+        type-ratom (r/atom "image/png")
         version-ratom (r/atom "")
         scale-ratom (r/atom 4)
         margin-ratom (r/atom 4)
@@ -72,7 +72,7 @@
                                               (reset! data-text-ratom nil))
                                           (do (reset! error-ratom nil)
                                               (reset! data-url-ratom url)
-                                              (reset! data-text-ratom nil)))))
+                                              (reset! data-text-ratom url)))))
                           (when (= @type-ratom "image/svg+xml")
                             (.toString QRCode
                                        @text-ratom
@@ -261,7 +261,7 @@
                                    (set-data-url))}]]
 
          [:div {:class "flex flex-col gap-1"}
-          "QR Code:"
+          "QR Code Image:"
           [:span {:class "text-error"}
            @error-ratom]
           [:div (when @bg-pattern-ratom {:class "moody-bg-transparent-checker w-fit p-5"})
@@ -271,10 +271,10 @@
            [:div {:class "flex flex-col gap-1 max-w-xl"}
             [:div {:class "flex items-center"}
              [:span {:class "mr-auto"}
-              "svg:"]
+              (if (= @type-ratom "image/svg+xml") "SVG:" "Data URI (can be embedded to <img src=\"\"> directly):")]
              (copy-button @data-text-ratom)]
             [:textarea {:class "textarea textarea-solid max-w-xl"
                         :rows 20
                         :read-only true
                         :on-click #(.select (.. % -target))
-                        :default-value @data-text-ratom}]])]]])))
+                        :value @data-text-ratom}]])]]])))
