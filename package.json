@@ -30,7 +30,7 @@
     "build:css": "tailwindcss -i ./src/input.css -o ./public/css/output.css --minify",
     "build:cljs": "shadow-cljs release",
     "build": "npm run clean && npm run build:css && npm run build:cljs web-github-pages",
-    "clean:css": "rm -rf public/css/*",
+    "clean:css": "rm -rf public/css/output.css",
     "clean:cljs": "rm -rf target && rm -rf public/js/*",
     "clean": "npm run clean:cljs && npm run clean:css"
   },
