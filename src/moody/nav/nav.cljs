@@ -49,7 +49,7 @@
             [:span {:class "badge badge-outline-secondary"} "Dev env"])]]
 
         [:div {:class "popover"}
-         [:label {:class "popover-trigger btn moody-ripple-btn-ghost-cloud" :tabindex "0"}
+         [:label {:class "popover-trigger btn moody-ripple-btn-ghost-cloud" :tab-index "0"}
           (case @theme-ratom
             "dark" icon-theme-dark-mode
             "light" icon-theme-light-mode
@@ -57,7 +57,7 @@
               icon-theme-dark-mode
               icon-theme-light-mode))]
          [:div
-          {:class "popover-content w-screen max-w-48" :tabindex "0"}
+          {:class "popover-content w-screen max-w-48" :tab-index "0"}
           [:div {:class "popover-arrow"}]
           [:div {:class "overflow-hidden rounded-lg"}
            [:div {:class "relative flex flex-col text-sm"}
