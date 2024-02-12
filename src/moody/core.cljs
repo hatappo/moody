@@ -12,7 +12,7 @@
    [moody.settings.settings-page :refer [settings-page]]
    [moody.subs]
    [moody.tools.conversion-page :refer [conversion-page]]
-   [moody.tools.hash :refer [hash-page]]
+   [moody.tools.hash-page :refer [hash-page]]
    [moody.tools.qr-page :refer [qr-page]]
    [moody.tools.radix-page :refer [radix-page]]
    [re-frame.core :as rf]

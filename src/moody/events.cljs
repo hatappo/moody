@@ -6,12 +6,6 @@
    [taoensso.timbre :as timbre]))
 
 (reg-event-db
- :set-options
- (fn-traced [db [event options]]
-            (timbre/info {:event event :options options})
-            (assoc-in db [:conversion :options] options)))
-
-(reg-event-db
  :update-input-text
  (fn-traced [db [event input-text options]]
             (let [{:keys [input-type output-type] :as nav} (-> db :nav)]
