@@ -50,7 +50,7 @@
                      [:h3 {:class "text-content1 text-base"} title]
                      [:p {:class "text-content2 text-xs"} desc]
                      [:div {:class "flex flex-wrap justify-start w-full gap-1"}
-                      (->> tags sort (map (fn [tag] ^{:key tag} [:span {:class "badge badge-flat-primary"} (str \# (name tag))])))]]]]))))]
+                      (->> tags sort (map (fn [tag] ^{:key tag} [:span {:class "badge badge-flat-primary"} (name tag)])))]]]]))))]
         [:div {:class "flex items-center"}
          [:label {:for "icon-checkbox"} "Icon:"]
          [:input {:type "checkbox"
