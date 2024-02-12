@@ -15,6 +15,7 @@
    [moody.tools.hash-page :refer [hash-page]]
    [moody.tools.qr-page :refer [qr-page]]
    [moody.tools.radix-page :refer [radix-page]]
+   [moody.tools.uuid-page :refer [uuid-page]]
    [re-frame.core :as rf]
    [reagent.dom.client :as rdc]
    [taoensso.timbre :as timbre]))
@@ -25,8 +26,8 @@
     :home [cards-page]
     :cards [cards-page]
     :settings [settings-page]
-    :conversions [conversion-page]
     :conversion [conversion-page]
+    :uuid [uuid-page]
     :radix [radix-page]
     :hash [hash-page]
     :qr [qr-page]

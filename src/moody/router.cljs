@@ -7,11 +7,11 @@
 (def routes ["/" {"" :home
                   "cards/" :cards
                   "settings/" :settings
-                  "conversions/" {"" :conversions
-                                  "radix/" :radix
-                                  "hash/" :hash
-                                  "qr/" :qr
-                                  [:input-type "/" :output-type] :conversion}
+                  "conversions/" {[:input-type "/" :output-type] :conversion}
+                  "generators/" {"uuid/" :uuid}
+                  "others/" {"radix/" :radix
+                             "hash/" :hash
+                             "qr/" :qr}
                   "about/" :about}])
 
 (def history

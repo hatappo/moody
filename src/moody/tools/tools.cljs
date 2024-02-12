@@ -224,7 +224,6 @@
                          str/trim
                          ;;  NOTE: Support `named import` with one value, `default import`, and `namespace import`
                          (re-matches #"\s*import\s+(\*\s+as\s+)?(\{?\s*[-_/a-zA-Z0-9.]+\s*\}?)\s+from\s+[\"']([-_/a-zA-Z0-9.]+)[\"']\s*;?\s*"))]
-                (js/console.log _stmt star object module)
                 (cond
                   (and object module)
                   (if (str/includes? object "{")
@@ -468,32 +467,6 @@
 (def notations-by-notation-type
   (zipmap (map :notation-type notations) notations))
 
-(def other-conversions
-  [{:tool-type "radix"
-    :title "Radix"
-    :label "Radix"
-    :tags #{:radix :hexadecimal :octan :binary}
-    :icon icons-tb/TbNumber16Small
-    :icon-html "ffff <br/> ↓↑ <br/> 65,535"
-    :path (router/path-for :radix)
-    :desc "Converts between multiple radix representations."}
-   {:tool-type "hash"
-    :title "Hash & Checksum"
-    :label "Hash & Checksum"
-    :tags #{:crypto}
-    :icon icons-pi/PiHash
-    :icon-html "a b c <br/> ↓ <br/> 22faaaf3..."
-    :path (router/path-for :hash)
-    :desc "Converts between multiple radix representations."}
-   {:tool-type "qr"
-    :title "QR Code"
-    :label "QR Code"
-    :tags #{:qr :encoding}
-    :icon icons-bs/BsQrCode
-    :icon-html "🔳"
-    :path (router/path-for :qr)
-    :desc "Generate QR code."}])
-
 (def ^:private conversions
   (->> notations
        (map (fn [{in-type :notation-type
@@ -539,16 +512,52 @@
        flatten
        (sort-by #(= :noop (:output-type %)))))
 
+(def generators
+  [{:tool-type "uuid"
+    :title "UUID"
+    :label "UUID"
+    :tags #{:identifier}
+    :icon icons-pi/PiFactory
+    :icon-html "Unique IDs"
+    :path (router/path-for :uuid)
+    :desc "Generate various versions of UUIDs"}])
+
+(def other-tools
+  [{:tool-type "radix"
+    :title "Radix"
+    :label "Radix"
+    :tags #{:radix :hexadecimal :octan :binary}
+    :icon icons-gi/GiComputing
+    :icon-html "ffff <br/> ↓↑ <br/> 65,535"
+    :path (router/path-for :radix)
+    :desc "Converts between multiple radix representations."}
+   {:tool-type "hash"
+    :title "Hash & Checksum"
+    :label "Hash & Checksum"
+    :tags #{:crypto}
+    :icon icons-pi/PiHash
+    :icon-html "a b c <br/> ↓ <br/> 22faaaf3..."
+    :path (router/path-for :hash)
+    :desc "Converts between multiple radix representations."}
+   {:tool-type "qr"
+    :title "QR Code"
+    :label "QR Code"
+    :tags #{:qr :encoding}
+    :icon icons-bs/BsQrCode
+    :icon-html "🔳"
+    :path (router/path-for :qr)
+    :desc "Generate QR code."}])
+
 (defn assoc-relevant-words-text
   [tools-raw]
   (map (fn [{:keys [title label desc tags] :as tool}]
-         (let [tag-words-text (str/join tags)
+         (let [tag-words-text (->> tags (map name) (str/join " "))
                relevant-words-text (str "\n" title "\n" label "\n" desc "\n" tag-words-text)]
            (assoc tool :relevant-words-text (str/lower-case relevant-words-text))))
        tools-raw))
 
 (def tools
-  (assoc-relevant-words-text (concat other-conversions conversions)))
+  (assoc-relevant-words-text (concat other-tools generators conversions)))
 
 (def clojure-tools
   (filter #(and (:clojure (:tags %)) (not= (:output-type %) :noop)) tools))
