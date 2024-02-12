@@ -18,3 +18,8 @@
  :<- [:nav]
  (fn [nav _]
    (get nav :active-page)))
+
+(reg-sub
+ :theme
+ (fn [db _]
+   (get-in db [:settings :theme])))

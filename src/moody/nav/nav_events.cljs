@@ -5,10 +5,15 @@
    [moody.cards.cards-page :refer [focus-search-input-on-keydown]]
    [moody.router :as router]
    [moody.tools.tools :refer [notations-by-notation-type]]
-   [re-frame.core :refer [reg-event-fx reg-fx]]
+   [re-frame.core :refer [reg-event-db reg-event-fx reg-fx]]
    [taoensso.timbre :as timbre]))
 
 ;; (def nav-interceptors [(path :nav)])
+
+(reg-event-db
+ :set-theme
+ (fn-traced [db [_ theme]]
+            (assoc-in db [:settings :theme] theme)))
 
 (reg-fx
  :navigate-to
@@ -39,7 +44,6 @@
                                   input-editor-lang (:editor-lang input-notation)
                                   output-editor-lang (if (= output-type :noop) input-editor-lang (:editor-lang output-notation))
                                   input-text (get-in db [:conversion :input-text])]
-                              (js/console.log input-text)
                               {:db db
                                :fx [[:dispatch [:set-input-editor-language input-editor-lang]]
                                     [:dispatch [:set-output-editor-language output-editor-lang]]
