@@ -20,6 +20,48 @@
     top: 15px;
   }
 
+  .moody-ripple-btn-ghost-cloud {
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    padding: 0;
+    /* animation: swaying-cloud 6s infinite; */
+    background-color: transparent;
+    box-shadow:
+      transparent 10px -7px 0 -5px,
+      transparent -10px -10px,
+      transparent -7px 5px,
+      transparent 10px 10px 0 -8px,
+      transparent 18px 2px 0 -5px,
+      transparent -22px 0px;
+    transition-duration: 0.15s;
+    transition-property: color, transform, background-color, border-color,
+      box-shadow;
+    transition-timing-function: ease-in;
+
+    &:hover {
+      background-color: rgb(var(--gray-4) / var(--tw-bg-opacity));
+      box-shadow:
+        rgb(var(--gray-4) / var(--tw-bg-opacity)) 10px -7px 0 -5px,
+        rgb(var(--gray-4) / var(--tw-bg-opacity)) -10px -10px,
+        rgb(var(--gray-4) / var(--tw-bg-opacity)) -7px 5px,
+        rgb(var(--gray-4) / var(--tw-bg-opacity)) 10px 10px 0 -8px,
+        rgb(var(--gray-4) / var(--tw-bg-opacity)) 18px 2px 0 -5px,
+        rgb(var(--gray-4) / var(--tw-bg-opacity)) -22px 0px;
+    }
+  }
+
+  /* @keyframes swaying-cloud {
+    0% {
+      transform: translatex(0);
+    }
+    50% {
+      transform: translatex(-10px);
+    }
+  } */
+
   .moody-bg-transparent-checker {
     background: linear-gradient(
         45deg,

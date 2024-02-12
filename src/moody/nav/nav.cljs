@@ -20,7 +20,7 @@
 (def icon-theme-system-mode [:> icons-pi/PiDesktopLight {:size "1.5em"}])
 (def icon-theme-light-mode [:> icons-bs/BsSun {:size "1.25em"}])
 (def icon-theme-dark-mode [:> icons-bs/BsFillMoonFill {:size "1.25em"}])
-(def icon-theme-checked [:> icons-pi/PiCheckBold {:class "text-primary m-4" :size "1.5em"}])
+(def icon-theme-checked [:> icons-pi/PiCheckBold {:class "text-primary mx-4" :size "1.5em"}])
 
 (def initial-settings
   {:theme (let [theme-in-ls (.getItem (.-localStorage js/window) "theme")]
@@ -49,7 +49,7 @@
             [:span {:class "badge badge-outline-secondary"} "Dev env"])]]
 
         [:div {:class "popover"}
-         [:label {:class "popover-trigger btn btn-ghost btn-sm" :tabindex "0"}
+         [:label {:class "popover-trigger btn moody-ripple-btn-ghost-cloud" :tabindex "0"}
           (case @theme-ratom
             "dark" icon-theme-dark-mode
             "light" icon-theme-light-mode
@@ -69,7 +69,7 @@
               icon-theme-system-mode]
              [:span {:class "mr-auto"}
               "System"]
-             [:span (when (= @theme-ratom "system") [:> icons-pi/PiCheckBold {:class "text-primary m-4" :size "1.5em"}])]]
+             [:span (when (= @theme-ratom "system") icon-theme-checked)]]
             [:a {:on-click #(do (reset! theme-ratom "light")
                                 (.setAttribute (.. js/document -documentElement) "data-theme" "light")
                                 (.setItem (.-localStorage js/window) "theme" "light"))
@@ -78,7 +78,7 @@
               icon-theme-light-mode]
              [:span {:class "mr-auto"}
               "Light"]
-             [:span (when (= @theme-ratom "light") [:> icons-pi/PiCheckBold {:class "text-primary m-4" :size "1.5em"}])]]
+             [:span (when (= @theme-ratom "light") icon-theme-checked)]]
             [:a {:on-click #(do (reset! theme-ratom "dark")
                                 (.setAttribute (.. js/document -documentElement) "data-theme" "dark")
                                 (.setItem (.-localStorage js/window) "theme" "dark"))
@@ -87,7 +87,7 @@
               icon-theme-dark-mode]
              [:span {:class "mr-auto"}
               "Dark"]
-             [:span (when (= @theme-ratom "dark") [:> icons-pi/PiCheckBold {:class "text-primary m-4" :size "1.5em"}])]]]]]]]
+             [:span (when (= @theme-ratom "dark") icon-theme-checked)]]]]]]]
 
        [:section {:class "sidebar-content"}
         [:nav {:class "menu rounded-md"}
