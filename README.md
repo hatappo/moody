@@ -41,16 +41,3 @@ Not Desktop App, But internet-less
 ```sh
 npm run dev
 ```
-
-
-
-## Note
-
-```clj
-cljs꞉user꞉> 
-(require '[hickory.core :as hc])
-nil
-cljs꞉user꞉> 
-(->> "<a href=\"foo\">foo</a>" hc/parse-fragment (map hc/as-hiccup))
-([:a {:href "foo"} "foo"])
-```

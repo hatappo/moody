@@ -1,7 +1,7 @@
 (ns moody.tools.qr-page
   (:require
    ["qrcode" :as QRCode]
-   [moody.components.button :refer [copy-button paste-button]]
+   [moody.components.button :refer [copy-button]]
    [moody.util-str :refer [pad]]
    [reagent.core :as r]
    [taoensso.timbre :as timbre]))

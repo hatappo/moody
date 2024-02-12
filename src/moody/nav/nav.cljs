@@ -33,8 +33,7 @@
 (defn nav
   []
   (let [theme-ratom (r/atom (:theme initial-settings))
-        img-file-ratom (r/atom (rand-nth ["moody1-icon.jpg" "moody2-icon.jpg"]))]
-    (js/console.log @theme-ratom)
+        img-file-ratom (r/atom (str "/moody/" (rand-nth ["neutral1-icon.jpg" "moody1-icon.jpg" "moody2-icon.jpg"])))]
 
     (fn []
       [:aside {:class "sidebar sidebar-fixed-left sidebar-mobile h-full justify-start max-sm:fixed max-sm:-translate-x-full"}

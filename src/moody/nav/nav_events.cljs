@@ -10,11 +10,6 @@
 
 ;; (def nav-interceptors [(path :nav)])
 
-(reg-event-db
- :set-theme
- (fn-traced [db [_ theme]]
-            (assoc-in db [:settings :theme] theme)))
-
 (reg-fx
  :navigate-to
  (fn-traced [{:keys [path]}]
