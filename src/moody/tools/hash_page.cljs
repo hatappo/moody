@@ -91,17 +91,19 @@
             [:div {:class "flex gap-4"}
              [:div {:class "flex items-center gap-2"}
               [:label {:for "upper-checkbox"}
-               "Upper case"]
+               "Upper case:"]
               [:input {:class "switch switch-bordered-primary mr-2"
                        :type "checkbox"
                        :id "upper-checkbox"
                        :checked @upper-ratom
                        :on-change (fn [_e] (swap! upper-ratom not))}]]]
 
-            [:div
+            [:div {:class "flex flex-col gap-1"}
              [:link {:rel "stylesheet" :type "text/css" :href "/css/filepond.min.css"}]
              [:link {:rel "stylesheet" :type "text/css" :href "/css/filepond-plugin-image-preview.min.css"}]
              (registerPlugin FilePondPluginImagePreview)
+             [:label {:class ""}
+              "Input message from a file:"]
              [:> FilePond  {:oninitfile #(timbre/info :oninitfile %)
                             :onaddfilestart #(timbre/info :onaddfilestart %)
                             :onaddfile (fn [err file]

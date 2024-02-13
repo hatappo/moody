@@ -38,7 +38,7 @@
 
          [:div {:class "flex items-center gap-2"}
           [:label {:for "format-checkbox"}
-           "Format"]
+           "Format:"]
           [:input {:class "switch switch-bordered-primary mr-2"
                    :type "checkbox"
                    :id "format-checkbox"
@@ -47,7 +47,7 @@
 
          [:div {:class "flex items-center gap-2"}
           [:label {:for "upper-checkbox"}
-           "Upper case"]
+           "Upper case:"]
           [:input {:class "switch switch-bordered-primary mr-2"
                    :type "checkbox"
                    :id "upper-checkbox"
