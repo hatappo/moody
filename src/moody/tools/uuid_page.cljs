@@ -66,7 +66,7 @@
                                                    #(gen-fn @name-ratom (get-in namespace-by-ns-kw [@ns-kw-ratom :ns-id]))
                                                    (if (validate @custom-ns-id-ratom)
                                                      #(gen-fn @name-ratom @custom-ns-id-ratom)
-                                                     (constantly (str "Invalid namespace id: " @custom-ns-id-ratom))))))]
+                                                     (constantly (str "Nmespace id must be UUID format value like 00000000-0000-0000-0000-000000000000" @custom-ns-id-ratom))))))]
                                   (reset! outputs-ratom outputs)))}
            "Gen"]]
 
@@ -138,13 +138,13 @@
              "Namespace:"
              [:div {:class "flex flex-col gap-1 px-4"}
 
-              [:div {:class "flex flex-row items-center gap-8"}
+              [:div {:class "flex flex-row items-center gap-4"}
                "Namespace kw:"
                (doall
                 (map (fn [{:keys [ns-kw]}]
                        (let [html-id (str (name ns-kw) "-ns-kw--input")]
                          ^{:key ns-kw}
-                         [:div {:class "flex items-center gap-2"}
+                         [:div {:class "flex items-center gap-1"}
                           [:input {:class "radio radio-bordered-primary"
                                    :type :radio
                                    :name "ns-kw"
@@ -161,10 +161,18 @@
               [:div {:class "flex items-center gap-2"}
                [:label {:for "ns-id-input"}
                 "Namespace id:"]
-               [:input {:class "input input-ghost-primary input-sm"
+               [:input {:class (str (comment :class)
+                                    "input input-sm "
+                                    (if (= @ns-kw-ratom :custom)
+                                      (if  (not (validate @custom-ns-id-ratom))
+                                        "input-error"
+                                        "input-ghost-success")
+                                      "input-solid"))
                         :type "text"
-                        :placeholder (when (= @ns-kw-ratom :custom) "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+                        :placeholder (when (= @ns-kw-ratom :custom) "00000000-0000-0000-0000-000000000000")
                         :read-only (not= @ns-kw-ratom :custom)
+                        :on-click #(when-not (= @ns-kw-ratom :custom)
+                                     (.select (.. % -target)))
                         :id "ns-id-input"
                         :value (if (= @ns-kw-ratom :custom)
                                  @custom-ns-id-ratom
@@ -173,9 +181,9 @@
 
          [:div {:class "flex flex-col"}
           "Generated IDs:"
-          [:textarea {:class "textarea textarea-ghost-primary max-w-xl"
+          [:textarea {:class "textarea textarea-solid max-w-xl"
                       :read-only true
-                      :rows 20
+                      :rows 16
                       :value (-> (str/join "\n" @outputs-ratom)
                                  (cond->>  (not @format-ratom) (#(str/replace % "-" "")))
                                  (cond->> @upper-ratom  str/upper-case))
