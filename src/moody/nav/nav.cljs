@@ -17,7 +17,7 @@
    [reagent.core :as r]
    [taoensso.timbre :as timbre]))
 
-(def icon-theme-system-mode [:> icons-pi/PiDesktopLight {:size "1.5em"}])
+(def icon-theme-system-mode [:> icons-bs/BsCircleHalf {:size "1.25em"}])
 (def icon-theme-light-mode [:> icons-bs/BsSun {:size "1.25em"}])
 (def icon-theme-dark-mode [:> icons-bs/BsFillMoonFill {:size "1.25em"}])
 (def icon-theme-checked [:> icons-pi/PiCheckBold {:class "text-primary mx-4" :size "1.5em"}])
@@ -68,7 +68,7 @@
              [:div {:class "flex h-10 w-10 shrink-0 items-center justify-center sm:h-12 sm:w-12"}
               icon-theme-system-mode]
              [:span {:class "mr-auto"}
-              "System"]
+              "OS Default"]
              [:span (when (= @theme-ratom "system") icon-theme-checked)]]
             [:a {:on-click #(do (reset! theme-ratom "light")
                                 (.setAttribute (.. js/document -documentElement) "data-theme" "light")
