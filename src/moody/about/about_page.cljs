@@ -15,4 +15,4 @@
         [:p
          "If you like this tool, please star it on GitHub. If you have a feature you'd like to see, please create an issue."]
         [:a {:href (router/path-for :cards)}
-         [:button {:class "btn my-8"} "Show All Tools"]]]])))
+         [:button {:class "link link-underline my-8"} "Show All Tools"]]]])))
