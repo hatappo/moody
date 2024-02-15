@@ -516,7 +516,7 @@
   [{:tool-type "uuid"
     :title "UUID"
     :label "UUID"
-    :tags #{:identifier}
+    :tags #{:identifier :generator}
     :icon icons-pi/PiFactory
     :icon-html "Unique IDs"
     :path (router/path-for :uuid)
@@ -573,6 +573,9 @@
        (filter #(and (:encoding (:tags %)) (not= (:output-type %) :noop)))
        (sort-by :title)
        reverse))
+
+(def generator-tools
+  (filter #(and (:generator (:tags %)) (not= (:output-type %) :noop)) tools))
 
 (def table-tools
   (filter #(and (:table (:tags %)) (not= (:output-type %) :noop)) tools))

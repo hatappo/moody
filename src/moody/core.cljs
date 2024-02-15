@@ -24,7 +24,7 @@
   [page-name]
   (case page-name
     :home [cards-page]
-    :cards [cards-page]
+    :cards [cards-page] ; TODO: not needed if the `/cards/` is removed?
     :settings [settings-page]
     :conversion [conversion-page]
     :uuid [uuid-page]
@@ -36,7 +36,9 @@
 
 (defn app
   []
-  (let [active-page @(rf/subscribe [:active-page])]
+  (let [active-page @(rf/subscribe [:active-page])
+        search-text @(rf/subscribe [:search-text])
+        display-cards-page? (empty? search-text)]
     [:div {:class "flex flex-row sm:gap-10"}
      [:div {:class "sm:w-full sm:max-w-[18rem]"}
       ;;  sidebar toggle checkbox (invisible)
@@ -48,7 +50,10 @@
       [:div {:class "w-fit" :id "main-container"}
        ;;  sidebar opener on mobile
        [:label {:for "sidebar-mobile-fixed" :class "btn-primary btn sm:hidden"} "Open Sidebar"]]
-      [pages active-page]]]))
+      [:div {:class (when-not display-cards-page? "opacity-0")}
+       [pages active-page]]
+      [:div {:class (str (comment :class) "absolute " (when display-cards-page? "-z-40 opacity-0"))}
+       [cards-page]]]]))
 
 (defn ^:dev/after-load start
   []

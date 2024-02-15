@@ -2,13 +2,40 @@
   (:require
    [clojure.string :as str]
    [day8.re-frame.tracing-stubs :refer-macros [fn-traced]]
-   [moody.cards.cards-page :refer [focus-search-input-on-keydown]]
    [moody.router :as router]
    [moody.tools.tools :refer [notations-by-notation-type]]
    [re-frame.core :refer [reg-event-db reg-event-fx reg-fx]]
+   [re-frame.std-interceptors :refer [path]]
    [taoensso.timbre :as timbre]))
 
-;; (def nav-interceptors [(path :nav)])
+(def nav-interceptors [(path :nav)])
+
+(defn- focus-search-input-on-keydown
+  [keyboardEvent]
+  (timbre/trace {:fn :focus-search-input-on-keydown :keyboardEvent keyboardEvent})
+  (let [meta-key? (.. keyboardEvent -metaKey) ; `Command` or `Windows` key
+        alt-key? (.. keyboardEvent -altKey)   ; `Option` or `Alt` key
+        shiftKey? (.. keyboardEvent -shiftKey)
+        ctrlKey? (.. keyboardEvent -ctrlKey)
+        code (.. keyboardEvent -code)]
+
+    (when (and (not meta-key?) (not alt-key?) (not shiftKey?) (not ctrlKey?) (= code "Slash"))
+      (when-not (= "search-input" (.. js/document -activeElement -id))
+        (.preventDefault keyboardEvent)
+        (.focus (.querySelector js/document "#search-input"))))))
+
+(defn- renewEventListenerOfSearchKeydownTrap
+  []
+  ;; NOTE: To avoid the behavior where event listeners remain duplicated during hot reloading in development,
+  ;; removing it once and then adding it again.
+  (.removeEventListener js/document "keydown" focus-search-input-on-keydown)
+  (.addEventListener js/document "keydown" focus-search-input-on-keydown))
+
+(reg-event-db
+ :set-search-text
+ nav-interceptors
+ (fn-traced [nav [_ search-text]]
+            (assoc nav :search-text search-text)))
 
 (reg-fx
  :navigate-to
@@ -27,11 +54,10 @@
                   db (-> db
                          (assoc-in [:nav :active-page] handler)
                          (assoc-in [:nav :input-type] (keyword input-type))
-                         (assoc-in [:nav :output-type] (keyword output-type)))]
+                         (assoc-in [:nav :output-type] (keyword output-type))
+                         (assoc-in [:nav :search-text] ""))]
 
-              (if (#{:cards :home} handler)
-                (.addEventListener js/document "keydown" focus-search-input-on-keydown) ; TODO: cannot type `/` when focus is no the search input
-                (.removeEventListener js/document "keydown" focus-search-input-on-keydown))
+              (renewEventListenerOfSearchKeydownTrap)
 
               (case handler
                 :conversion (let [input-notation (input-type notations-by-notation-type)

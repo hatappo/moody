@@ -20,6 +20,12 @@
    (get nav :active-page)))
 
 (reg-sub
+ :search-text
+ :<- [:nav]
+ (fn [nav _]
+   (get nav :search-text)))
+
+(reg-sub
  :theme
  (fn [db _]
    (get-in db [:settings :theme])))
