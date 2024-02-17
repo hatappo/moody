@@ -46,7 +46,7 @@
             input-notation (notations-by-notation-type input-type)
             output-notation (notations-by-notation-type output-type)]
 
-        [:article {:class "flex flex-col gap-2"}
+        [:article {:class "flex flex-col gap-2 md:mr-8"}
          [:h2 {:class "text-xl my-4"}
           "Data Format Conversion"]
          [:section
@@ -78,17 +78,17 @@
                           :on-click (fn [] (swap-converter))}
                  [:> icons-go/GoArrowSwitch {:size "1.0em"}]]]))]]
 
-         [:section {:class "grid grid-flow-col justify-stretch gap-4 "}
-          [:div {:class "max-w-full"}
-           [:div {:class "flex items-center my-2"}
-            [:div {:class "ml-1"}
-             "Input"]
+         [:section {:class "flex flex-col xl:flex-row gap-4 "}
+
+          [:div {:class "flex-grow"}
+           [:div {:class "flex items-center m-1"}
+            "Input"
             [:div {:class "flex justify-end gap-2 w-full mr-1"}
              [:button {:class "btn btn-sm"
                        :on-click #(update-input-text "")}
               [:> icons-lu/LuEraser {:size "1.3em"}]]
              (paste-button (fn [text] (update-input-text text)))]]
-           [:div {:class "flex justify-center max-w-full"}
+           [:div
             [:> Editor {:height "70vh"
                         :width "99%"
                         :options {:minimap {:enabled false}
@@ -102,8 +102,9 @@
                                     (.setTheme (.-editor ^js monaco) editor-theme)
                                     (.setModelLanguage (.-editor ^js monaco) (.getModel ^js editor) (:editor-lang input-notation))
                                     (set-input-monaco-editor-instances editor monaco))}]]]
-          [:div {:class "max-w-full"}
-           [:div {:class "flex items-center my-2"}
+
+          [:div {:class "flex-grow"}
+           [:div {:class "flex items-center m-1"}
             [:div {:class "flex gap-2 w-full"}
              (copy-button output-text)
              [:span
@@ -123,13 +124,12 @@
             [:div {:class "flex items-center gap-2 justify-end w-full"}
              [:label {:for "pretty-checkbox"}
               "pretty"]
-             [:input {:class "switch switch-bordered-primary mr-2"
+             [:input {:class "switch switch-bordered-primary"
                       :type "checkbox"
                       :id "pretty-checkbox"
                       :checked (:pretty? @options-ratom)
                       :on-change (fn [_e] (swap! options-ratom update :pretty? not) (update-input-text input-text))}]]]
-
-           [:div {:class "max-w-full"}
+           [:div
             [:> Editor {:height "70vh"
                         :width "99%"
                         :options {:minimap {:enabled false}
