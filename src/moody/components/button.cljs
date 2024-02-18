@@ -18,7 +18,7 @@
   ([paste-text-fn]
    (paste-button paste-text-fn "Paste"))
   ([paste-text-fn label]
-   [:button {:class "btn btn-sm btn-ghost-primary gap-2"
+   [:button {:class "btn btn-sm gap-2"
              :title "Paste"
              :on-click #(read-from-clipboard-and-show-toast paste-text-fn)}
     [:> icons-lia/LiaPasteSolid {:size "1.3em"}]
