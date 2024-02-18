@@ -513,10 +513,18 @@
        (sort-by #(= :noop (:output-type %)))))
 
 (def generators
-  [{:tool-type "uuid"
+  [{:tool-type :stamp
+    :title "Stamp Emoji"
+    :label "Stamp Emoji"
+    :tags #{:generator :image}
+    :icon icons-pi/PiStamp
+    :icon-html "🆎"
+    :path (router/path-for :stamp)
+    :desc "Generate a image with arbitrary text written on it "}
+   {:tool-type :uuid
     :title "UUID"
     :label "UUID"
-    :tags #{:identifier :generator}
+    :tags #{:generator :identifier}
     :icon icons-pi/PiFactory
     :icon-html "Unique IDs"
     :path (router/path-for :uuid)

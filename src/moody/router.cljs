@@ -8,7 +8,8 @@
                   "cards/" :cards
                   "settings/" :settings
                   "conversions/" {[:input-type "/" :output-type] :conversion}
-                  "generators/" {"uuid/" :uuid}
+                  "generators/" {"stamp/" :stamp
+                                 "uuid/" :uuid}
                   "others/" {"radix/" :radix
                              "hash/" :hash
                              "qr/" :qr}

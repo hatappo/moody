@@ -1,5 +1,6 @@
 # General
 .env
+/tmp.*
 
 # Mac
 .DS_Store
@@ -24,7 +25,6 @@ node_modules
 
 # TailwindCSS
 /public/css/output.css
-
 
 # Clojure(Script)
 .lein-repl-history
