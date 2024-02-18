@@ -50,9 +50,9 @@
       [:div {:class "w-fit" :id "main-container"}
        ;;  sidebar opener on mobile
        [:label {:for "sidebar-mobile-fixed" :class "btn-primary btn sm:hidden"} "Open Sidebar"]]
-      [:div {:class (when-not display-cards-page? "opacity-0")}
+      [:div {:class (when-not display-cards-page? "hidden")}
        [pages active-page]]
-      [:div {:class (str (comment :class) "absolute " (when display-cards-page? "-z-40 opacity-0"))}
+      [:div {:class (str (comment :class) "absolute " (when display-cards-page? "hidden"))}
        [cards-page]]]]))
 
 (defn ^:dev/after-load start
