@@ -10,7 +10,8 @@
                   "conversions/" {[:input-type "/" :output-type] :conversion}
                   "generators/" {"stamp/" :stamp
                                  "uuid/" :uuid}
-                  "others/" {"radix/" :radix
+                  "others/" {"filetype/" :filetype
+                             "radix/" :radix
                              "hash/" :hash
                              "qr/" :qr}
                   "about/" :about}])

@@ -2,6 +2,7 @@
   (:require
    ["js-beautify" :as js-beautify]
    ["react-icons/bs" :as icons-bs]
+   ["react-icons/fa6" :as icons-fa6]
    ["react-icons/gi" :as icons-gi]
    ["react-icons/go" :as icons-go]
    ["react-icons/pi" :as icons-pi]
@@ -531,7 +532,15 @@
     :desc "Generate various versions of UUIDs"}])
 
 (def other-tools
-  [{:tool-type :radix
+  [{:tool-type :filetype
+    :title "Filetype"
+    :label "Filetype"
+    :tags #{:file}
+    :icon icons-fa6/FaFileCircleQuestion
+    :icon-html "Filetype"
+    :path (router/path-for :filetype)
+    :desc "Detect filetype by file contents (using Magika)"}
+   {:tool-type :radix
     :title "Radix"
     :label "Radix"
     :tags #{:radix :hexadecimal :octan :binary}

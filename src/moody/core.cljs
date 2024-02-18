@@ -12,6 +12,7 @@
    [moody.settings.settings-page :refer [settings-page]]
    [moody.subs]
    [moody.tools.conversion-page :refer [conversion-page]]
+   [moody.tools.filetype-page :refer [filetype-page]]
    [moody.tools.hash-page :refer [hash-page]]
    [moody.tools.qr-page :refer [qr-page]]
    [moody.tools.radix-page :refer [radix-page]]
@@ -25,11 +26,12 @@
   [page-name]
   (case page-name
     :home [cards-page]
-    :cards [cards-page] ; TODO: not needed if the `/cards/` is removed?
+    :cards [cards-page] ; Redundant, :home and :cards
     :settings [settings-page]
     :conversion [conversion-page]
     :stamp [stamp-page]
     :uuid [uuid-page]
+    :filetype [filetype-page]
     :radix [radix-page]
     :hash [hash-page]
     :qr [qr-page]
