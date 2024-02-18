@@ -102,7 +102,7 @@
            [:input {:class "input input-ghost-primary input-sm pl-10"
                     :type "search"
                     :id "search-input"
-                    :default-value search-text ; TODO: replace :default-value to :value
+                    :value search-text
                     :on-change #(set-search-text (.. % -target -value))}]
            [:label {:class "absolute left-3 inline-flex"
                     :for "search-input"}

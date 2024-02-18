@@ -219,7 +219,7 @@
   (->> (str/split statements "\n")
        (remove str/blank?)
        (map (fn [stmt]
-              (let [[_stmt star object module]
+              (let [[_stmt _star object module]
                     (->> stmt
                          str/trim
                          ;;  NOTE: Support `named import` with one value, `default import`, and `namespace import`
@@ -523,7 +523,7 @@
     :desc "Generate various versions of UUIDs"}])
 
 (def other-tools
-  [{:tool-type "radix"
+  [{:tool-type :radix
     :title "Radix"
     :label "Radix"
     :tags #{:radix :hexadecimal :octan :binary}
@@ -531,7 +531,7 @@
     :icon-html "ffff <br/> ↓↑ <br/> 65,535"
     :path (router/path-for :radix)
     :desc "Converts between multiple radix representations."}
-   {:tool-type "hash"
+   {:tool-type :hash
     :title "Hash & Checksum"
     :label "Hash & Checksum"
     :tags #{:crypto}
@@ -539,7 +539,7 @@
     :icon-html "a b c <br/> ↓ <br/> 22faaaf3..."
     :path (router/path-for :hash)
     :desc "Converts between multiple radix representations."}
-   {:tool-type "qr"
+   {:tool-type :qr
     :title "QR Code"
     :label "QR Code"
     :tags #{:qr :encoding}
