@@ -9,17 +9,18 @@
   []
   (let [icon?-ratom (r/atom true)]
     (fn []
-      (let [search-text @(rf/subscribe [:search-text])]
-        (js/console.log 111 search-text)
+      (let [search-text @(rf/subscribe [:search-text])
+            tools (filter (fn [{:keys [relevant-words-text]}]
+                            (str/includes? relevant-words-text (str/lower-case (str search-text))))
+                          tools/tools)
+            nothing? (zero? (count tools))]
         [:article {:class "flex flex-col gap-2"}
          [:h2 {:class "text-xl my-4"}
           "All Tools"]
          [:section
           [:div {:class "flex flex-wrap my-4 gap-4"}
            (doall
-            (->> tools/tools
-                 (filter (fn [{:keys [relevant-words-text]}]
-                           (str/includes? relevant-words-text (str/lower-case (str search-text)))))
+            (->> tools
                  (map-indexed
                   (fn [_idx {:keys [tool-type path tags icon icon-html title desc]}]
                     ^{:key tool-type}
@@ -34,7 +35,7 @@
                        [:p {:class "text-content2 text-xs"} desc]
                        [:div {:class "flex flex-wrap justify-start w-full gap-1"}
                         (->> tags sort (map (fn [tag] ^{:key tag} [:span {:class "badge badge-flat-primary"} (name tag)])))]]]]))))]
-          [:div {:class "flex items-center"}
+          [:div {:class (str "flex items-center" (when nothing? " hidden"))}
            [:label {:for "icon-checkbox"} "Icon:"]
            [:input {:type "checkbox"
                     :id "icon-checkbox"
