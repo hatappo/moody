@@ -60,6 +60,10 @@
               (renewEventListenerOfSearchKeydownTrap)
 
               (case handler
+                :home (let [search-query (.get (.-searchParams (js/URL. (.-location js/window))) "q")]
+                        (if search-query
+                          {:db db :fx [[:dispatch [:set-search-text search-query]]]}
+                          {:db db}))
                 :conversion (let [input-notation (input-type notations-by-notation-type)
                                   output-notation (output-type notations-by-notation-type)
                                   input-editor-lang (:editor-lang input-notation)
