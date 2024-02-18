@@ -48,7 +48,7 @@
                           :maxFiles 1
                           :name "files"
                           :className "w-96"
-                          :credits {:label "" :url ""}
+                          ;; :credits {:label "" :url ""}
                           :stylePanelAspectRatio "0.25"
                           :labelIdle "Drag & Drop a file or <span class=\" filepond--label-action \">Browse</span>"}]]
 
