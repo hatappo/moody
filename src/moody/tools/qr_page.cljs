@@ -49,38 +49,39 @@
         data-url-ratom (r/atom nil)
         data-text-ratom (r/atom nil)
         error-ratom (r/atom nil)
-        set-data-url #(if (empty? @text-ratom)
-                        (do (reset! error-ratom nil)
-                            (reset! data-url-ratom nil))
-                        (let [options (clj->js
-                                       {:errorCorrectionLevel @level-ratom
-                                        :type @type-ratom
-                                        :version @version-ratom
-                                        :scale @scale-ratom
-                                        :margin @margin-ratom
-                                        :maskPattern @mask-pattern-ratom
-                                        :color {:dark (str @color-dark-ratom (to-hex @opacity-dark-ratom))
-                                                :light (str @color-light-ratom (to-hex @opacity-light-ratom))}})]
-                          (timbre/info options)
-                          (.toDataURL QRCode
-                                      @text-ratom
-                                      options
-                                      (fn [err url]
-                                        (if err
-                                          (do (reset! error-ratom (str err))
-                                              (reset! data-url-ratom nil)
-                                              (reset! data-text-ratom nil))
-                                          (do (reset! error-ratom nil)
-                                              (reset! data-url-ratom url)
-                                              (reset! data-text-ratom url)))))
-                          (when (= @type-ratom "image/svg+xml")
-                            (.toString QRCode
+        set-data-url (fn []
+                       (if (empty? @text-ratom)
+                         (do (reset! error-ratom nil)
+                             (reset! data-url-ratom nil))
+                         (let [options (clj->js
+                                        {:errorCorrectionLevel @level-ratom
+                                         :type @type-ratom
+                                         :version @version-ratom
+                                         :scale @scale-ratom
+                                         :margin @margin-ratom
+                                         :maskPattern @mask-pattern-ratom
+                                         :color {:dark (str @color-dark-ratom (to-hex @opacity-dark-ratom))
+                                                 :light (str @color-light-ratom (to-hex @opacity-light-ratom))}})]
+                           (timbre/info options)
+                           (.toDataURL QRCode
                                        @text-ratom
                                        options
-                                       (fn [err text]
+                                       (fn [err url]
                                          (if err
-                                           (reset! data-text-ratom nil)
-                                           (reset! data-text-ratom text)))))))]
+                                           (do (reset! error-ratom (str err))
+                                               (reset! data-url-ratom nil)
+                                               (reset! data-text-ratom nil))
+                                           (do (reset! error-ratom nil)
+                                               (reset! data-url-ratom url)
+                                               (reset! data-text-ratom url)))))
+                           (when (= @type-ratom "image/svg+xml")
+                             (.toString QRCode
+                                        @text-ratom
+                                        options
+                                        (fn [err text]
+                                          (if err
+                                            (reset! data-text-ratom nil)
+                                            (reset! data-text-ratom text))))))))]
 
     (set-data-url)
 

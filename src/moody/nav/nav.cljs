@@ -15,8 +15,7 @@
    [moody.router :as router]
    [moody.tools.tools :as tools]
    [re-frame.core :as rf]
-   [reagent.core :as r]
-   [taoensso.timbre :as timbre]))
+   [reagent.core :as r]))
 
 (def icon-theme-system-mode [:> icons-bs/BsCircleHalf {:size "1.25em"}])
 (def icon-theme-light-mode [:> icons-bs/BsSun {:size "1.25em"}])
@@ -25,7 +24,6 @@
 
 (def initial-settings
   {:theme (let [theme-in-ls (.getItem (.-localStorage js/window) "theme")]
-            (timbre/info {:theme-in-ls theme-in-ls})
             (if (#{"dark" "light"} theme-in-ls)
               (do (.setAttribute (.. js/document -documentElement) "data-theme" (name theme-in-ls))
                   theme-in-ls)
