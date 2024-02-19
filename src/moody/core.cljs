@@ -12,6 +12,7 @@
    [moody.settings.settings-page :refer [settings-page]]
    [moody.subs]
    [moody.tools.conversion-page :refer [conversion-page]]
+   [moody.tools.datetime-page :refer [datetime-page]]
    [moody.tools.filetype-page :refer [filetype-page]]
    [moody.tools.hash-page :refer [hash-page]]
    [moody.tools.qr-page :refer [qr-page]]
@@ -26,11 +27,12 @@
   [page-name]
   (case page-name
     :home [cards-page]
-    :cards [cards-page] ; Redundant, :home and :cards
+    #_#_:cards [cards-page]
     :settings [settings-page]
     :conversion [conversion-page]
     :stamp [stamp-page]
     :uuid [uuid-page]
+    :datetime [datetime-page]
     :filetype [filetype-page]
     :radix [radix-page]
     :hash [hash-page]

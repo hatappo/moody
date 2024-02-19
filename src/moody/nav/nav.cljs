@@ -121,7 +121,7 @@
             [:ul {:class "menu-items"}
              [:li
               [:input {:type "checkbox" :id "menu-all" :class "menu-toggle"}]
-              [:a {:href (router/path-for :cards)}
+              [:a {:href (router/path-for :home)}
                [:label {:class "menu-item justify-between" :for "menu-all"}
                 [:div {:class "flex gap-2"}
                  [:> icons-vsc/VscHome {:size "1.5em"}]

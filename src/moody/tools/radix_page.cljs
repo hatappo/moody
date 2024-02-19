@@ -59,9 +59,9 @@
           (map (fn [{:keys [base title re separator]}]
                  (let [html-id (str "radix-" title "-input")]
                    ^{:key title}
-                   [:div {:class "flex flex-col gap-2"}
+                   [:div {:class "flex flex-col gap-1"}
                     [:label {:for html-id} (str title " (" base ")")]
-                    [:input {:class "input input-solid input-sm input-block input-ghost-primary text-right"
+                    [:input {:class "input input-sm input-block input-ghost-primary text-right"
                              :type "text"
                              :value (let [n (js/Number.parseInt @num-ratom 10)] ; hold ratom value as decimal (10)
                                       (when-not (NaN? n)

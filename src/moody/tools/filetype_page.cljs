@@ -7,7 +7,7 @@
    [taoensso.timbre :as timbre]))
 
 (def initial-values
-  {:prediction {"label" "❓" "score" "❓"}})
+  {:prediction {"label" "?" "score" "?"}})
 
 (defn filetype-page
   []

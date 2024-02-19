@@ -25,6 +25,7 @@
                   (fn [_idx {:keys [tool-type path tags icon icon-html title desc]}]
                     ^{:key tool-type}
                     [:a {:href path}
+                     (when (:new tags) [:span {:class "absolute m-1 badge badge-flat-warning italic"} "New!"])
                      [:div {:class "rounded-md bg-gray-3 h-80 w-44"}
                       [:div {:class "flex flex-col items-center gap-2 p-4"}
                        [:div {:class "flex items-center justify-center text-center bg-gray-5 rounded-md aspect-square w-24 p-2 m-4"}
@@ -34,7 +35,7 @@
                        [:h3 {:class "text-content1 text-base"} title]
                        [:p {:class "text-content2 text-xs"} desc]
                        [:div {:class "flex flex-wrap justify-start w-full gap-1"}
-                        (->> tags sort (map (fn [tag] ^{:key tag} [:span {:class "badge badge-flat-primary"} (name tag)])))]]]]))))]
+                        (->> tags (remove #(= :new %)) sort (map (fn [tag] ^{:key tag} [:span {:class "badge badge-flat-primary"} (name tag)])))]]]]))))]
           [:div {:class (str "flex items-center" (when nothing? " hidden"))}
            [:label {:for "icon-checkbox"} "Icon:"]
            [:input {:type "checkbox"

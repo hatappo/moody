@@ -5,12 +5,13 @@
    [re-frame.core :as rf]))
 
 (def routes ["/" {"" :home
-                  "cards/" :cards
+                  #_#_"cards/" :cards
                   "settings/" :settings
                   "conversions/" {[:input-type "/" :output-type] :conversion}
                   "generators/" {"stamp/" :stamp
                                  "uuid/" :uuid}
-                  "others/" {"filetype/" :filetype
+                  "others/" {"datetime/" :datetime
+                             "filetype/" :filetype
                              "radix/" :radix
                              "hash/" :hash
                              "qr/" :qr}

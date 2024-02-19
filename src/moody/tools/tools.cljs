@@ -517,7 +517,7 @@
   [{:tool-type :stamp
     :title "Stamp Emoji"
     :label "Stamp Emoji"
-    :tags #{:generator :image}
+    :tags #{:generator :image :new}
     :icon icons-pi/PiStamp
     :icon-html "🆎"
     :path (router/path-for :stamp)
@@ -532,10 +532,18 @@
     :desc "Generate various versions of UUIDs"}])
 
 (def other-tools
-  [{:tool-type :filetype
+  [{:tool-type :datetime
+    :title "Datetime"
+    :label "Datetime"
+    :tags #{:date :time :new}
+    :icon icons-fa6/FaRegClock
+    :icon-html "🕔"
+    :path (router/path-for :datetime)
+    :desc "Convert date and time into various format"}
+   {:tool-type :filetype
     :title "Filetype"
     :label "Filetype"
-    :tags #{:file}
+    :tags #{:file :analysis :new}
     :icon icons-fa6/FaFileCircleQuestion
     :icon-html "Filetype"
     :path (router/path-for :filetype)
