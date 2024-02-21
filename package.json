@@ -20,6 +20,7 @@
   },
   "scripts": {
     "prepare": "husky install",
+    "open": "open http://localhost:3330",
     "node": "shadow-cljs server",
     "test": "shadow-cljs compile test-local-server && node out/node-tests.js; sh bin/print-by-status.sh",
     "dev:test": "shadow-cljs watch test-local-server --config-merge '{:autorun true}'",
