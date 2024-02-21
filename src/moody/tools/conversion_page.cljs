@@ -81,9 +81,12 @@
          [:section {:class "flex flex-col xl:flex-row gap-4 "}
 
           [:div {:class "flex-grow"}
-           [:div {:class "flex items-center m-1"}
-            "Input"
-            [:div {:class "flex justify-end gap-2 w-full mr-1"}
+           [:div {:class "flex items-center justify-between m-1"}
+            [:div {:class "flex gap-1"}
+             "Input"
+             [:span {:class "badge badge-flat-secondary"}
+              (:editor-lang input-notation)]]
+            [:div {:class "flex justify-end gap-2"}
              [:button {:class "btn btn-sm"
                        :on-click #(update-input-text "")}
               [:> icons-lu/LuEraser {:size "1.3em"}]]
@@ -104,8 +107,8 @@
                                     (set-input-monaco-editor-instances editor monaco))}]]]
 
           [:div {:class "flex-grow"}
-           [:div {:class "flex items-center m-1"}
-            [:div {:class "flex gap-2 w-full"}
+           [:div {:class "flex items-center justify-between m-1"}
+            [:div {:class "flex gap-2"}
              (copy-button output-text)
              [:span
               {:class "tooltip tooltip-top" :data-tooltip "Paste the text on the clipboard to overwrite it with the conversion result."}
@@ -121,14 +124,10 @@
                [:> icons-lia/LiaPasteSolid {:size "1.3em" :class "mr-1"}]
                "&"
                [:> icons-lia/LiaCopySolid {:size "1.3em" :class "ml-1"}]]]]
-            [:div {:class "flex items-center gap-2 justify-end w-full"}
-             [:label {:for "pretty-checkbox"}
-              "pretty"]
-             [:input {:class "switch switch-bordered-primary"
-                      :type "checkbox"
-                      :id "pretty-checkbox"
-                      :checked (:pretty? @options-ratom)
-                      :on-change (fn [_e] (swap! options-ratom update :pretty? not) (update-input-text input-text))}]]]
+            [:div {:class "flex gap-1"}
+             [:span {:class "badge badge-flat-secondary"}
+              (:editor-lang output-notation)]
+             "output"]]
            [:div
             [:> Editor {:height "70vh"
                         :width "99%"
@@ -140,4 +139,11 @@
                                     (.setModelLanguage (.-editor ^js monaco) (.getModel ^js editor) (:editor-lang output-notation))
                                     (set-output-monaco-editor-instances editor monaco))}]]]]
          [:section
-          [:span]]]))))
+          [:div {:class "flex items-center gap-2 w-full"}
+           [:label {:for "pretty-checkbox"}
+            "prettify output"]
+           [:input {:class "switch switch-bordered-secondary"
+                    :type "checkbox"
+                    :id "pretty-checkbox"
+                    :checked (:pretty? @options-ratom)
+                    :on-change (fn [_e] (swap! options-ratom update :pretty? not) (update-input-text input-text))}]]]]))))
