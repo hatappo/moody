@@ -147,8 +147,10 @@
                  (str/join ", " checksum-matched-digest-ids-set)]])]]
            [:div {:class "flex gap-1"}
             (paste-button (fn [text] (reset! checksum-ratom text)) "")
-            [:input {:class (str (comment :class) "input input-ghost-primary input-sm input-block text-xs"
-                                 (when exist-checksum-matched-digest? (comment :class) " text-success"))
+            [:input {:class (str (comment :class) "input input-sm input-block text-xs"
+                                 (if exist-checksum-matched-digest?
+                                   " input-ghost-success text-success"
+                                   " input-ghost-primary"))
                      :type "text"
                      :value @checksum-ratom
                      :on-click #(.select (.. % -target))
@@ -158,14 +160,15 @@
           [:div {:class "flex flex-col gap-2 text-sm"}
            (doall
             (map (fn [{:keys [id digest]}]
-                   (let [match-checksum? (= @checksum-ratom digest)
-                         digest (cond->> digest @upper-ratom str/upper-case)]
+                   (let [digest (cond->> digest @upper-ratom str/upper-case)
+                         match-checksum? (= (str/lower-case @checksum-ratom) (str/lower-case digest))]
                      ^{:key id}
                      [:div {:class "flex flex-col gap-1"}
-                      [:div {:class "flex items-center"}
+                      [:div {:class "flex items-center gap-2"}
                        [:label {:class (when match-checksum? (comment :class) "text-success")
                                 :for id}
-                        id]]
+                        id]
+                       (when match-checksum? [:> icons-bs/BsCheckCircle {:class "text-success" :size "1.3em"}])]
                       [:div {:class "flex gap-1"}
                        (copy-button digest "")
                        [:input {:class (str (comment :class) "input input-solid input-sm input-block text-xs"
