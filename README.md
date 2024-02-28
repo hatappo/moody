@@ -24,20 +24,26 @@ HTML to Hiccup
 - Option: converting attribute name of camel case into kebab case.
 - Option: converting value of style attribute from string to map in order to use in Reagent.
 
-Both GUI and CUI
+Not Desktop App, But internet-less
+
+- A browser application is more convenient, but it should be work **without server side applications**
+
+Both GUI and CUI (not implemented)
 
 - I want both interfaces, and I want to go back and forth between them easily.
 This would make it easier to share the conversion with others.
 
-Not Desktop App, But internet-less
-
-- A browser application is more convenient, but it should be work without server application
 
 
 
+## How to use
 
-## Up
+Go to https://moody.odoru.dev
 
+Or use locally: 
 ```sh
+git clone https://github.com/hatappo/moody.git
+cd moody
 npm run dev
+open http://localhost:3330
 ```
